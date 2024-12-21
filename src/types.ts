@@ -48,3 +48,16 @@ export interface Trait {
   publishedAt: string;
   image: Image[];
 }
+
+
+export interface Meme {
+  id: number;
+  documentId: string;
+  type: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  image: Image[];
+}
+
