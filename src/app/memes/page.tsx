@@ -15,27 +15,8 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Stage, Layer, Transformer } from "react-konva";
-import { decimalUpToSeven } from "@/util/decimalUpToSeven";
-import Konva from "konva";
+import { getScaledMousePosition } from "@/util/getScaledMousePosition";
 
-export const getScaledMousePosition = (
-  stage: Konva.Stage,
-  e: DragEvent | MouseEvent
-) => {
-  stage.setPointersPositions(e);
-  const stageOrigin = stage.getAbsolutePosition();
-  const mousePosition = stage.getPointerPosition();
-  if (mousePosition) {
-    return {
-      x: decimalUpToSeven((mousePosition.x - stageOrigin.x) / stage.scaleX()),
-      y: decimalUpToSeven((mousePosition.y - stageOrigin.y) / stage.scaleY()),
-    };
-  }
-  return {
-    x: 0,
-    y: 0,
-  };
-};
 
 export default function Memes() {
   const sections = ["Stickers", "GIFs"];
@@ -43,7 +24,7 @@ export default function Memes() {
   const [tab, setTab] = useState("Stickers");
   const transformer = useTransformer();
 
-  const { selectedItems, onSelectItem, setSelectedItems, clearSelection } =
+  const { onSelectItem, clearSelection } =
     useSelection(transformer);
 
   const { stageRef } = useStage();

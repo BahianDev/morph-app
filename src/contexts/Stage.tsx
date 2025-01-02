@@ -26,7 +26,7 @@ const stageReducer = (state: StageData[], action: StageAction): StageData[] => {
       return [...state, action.payload];
     case "UPDATE_ITEM":
       if (Array.isArray(action.payload)) {
-        let payload: StageData[] = action.payload;
+        const payload: StageData[] = action.payload;
         return state.map((item) =>
           payload.find((update) => update.id === item.id)
             ? {
@@ -37,7 +37,7 @@ const stageReducer = (state: StageData[], action: StageAction): StageData[] => {
         );
       }
 
-      let payload: StageData = action.payload;
+      const payload: StageData = action.payload;
 
       return state.map((item) =>
         item.id === payload.id ? { ...item, ...action.payload } : item
@@ -61,7 +61,7 @@ const StageDataContext = createContext<{
 
 export const StageDataProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
-}: any) => {
+}) => {
   const [state, dispatch] = useReducer(stageReducer, initialState);
 
   return (

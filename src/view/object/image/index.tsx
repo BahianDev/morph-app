@@ -6,6 +6,7 @@ import useDragAndDrop from "@/hooks/useDragAndDrop";
 import { OverrideItemProps } from "@/hooks/useItem";
 import useStage from "@/hooks/useStage";
 import { StageData } from "@/contexts/Stage";
+import "gifler";
 
 export type ImageItemKind = {
   "data-item-type": string;
@@ -20,7 +21,7 @@ export type ImageItemProps = OverrideItemProps<{
   e?: DragEvent;
 }>;
 
-const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
+const ImageItem: React.FC<ImageItemProps> = ({ data, onSelect }) => {
   const { attrs } = data;
   const imageRef = useRef() as RefObject<Konva.Image>;
   const [imageSrc, setImageSrc] = useState<CanvasImageSource>(new Image());
@@ -31,69 +32,88 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
   );
 
   useEffect(() => {
-    const newImage = new Image();
-    newImage.onload = () => {
-      setImageSrc(newImage);
+    let anim: any;
+    if (attrs.src.endsWith(".gif")) {
+      const gifImage = new Image();
 
-      // Posicionar a imagem no centro
-      const stageWidth = stage.stageRef.current?.width() || 0;
-      const stageHeight = stage.stageRef.current?.height() || 0;
+      gifImage.onload = () => {
+        (window as any).gifler(attrs.src).get((a: any) => {
+          anim = a;
+          const canvas = imageRef.current?.getLayer()?.getCanvas();
 
-      let width, height, x, y;
-      if (newImage.width > newImage.height) {
-        width = decimalUpToSeven(500);
-        height = decimalUpToSeven(width * (newImage.height / newImage.width));
-      } else {
-        height = decimalUpToSeven(500);
-        width = decimalUpToSeven(height * (newImage.width / newImage.height));
-      }
-
-      // Calcula a posição central
-      x = (stageWidth - width) / 2;
-      y = (stageHeight - height) / 2;
-      console.log(data.attrs);
-
-      data.attrs.x = x;
-      data.attrs.y = y;
-      data.attrs.width = width;
-      data.attrs.height = height;
-    };
-    newImage.crossOrigin = "Anonymous";
-    let source;
-    if (attrs.src.startsWith("find:")) {
-      source = attrs.src;
+          if (canvas) {
+            anim.animateInCanvas(canvas);
+            anim.onDrawFrame = (ctx: any, frame: any) => {
+              ctx.drawImage(frame.buffer, frame.x, frame.y, 500, 500);
+              // imageRef.current?.getLayer()?.draw();
+            };
+          }
+        });
+      };
+      gifImage.src = attrs.src;
     } else {
-      source = attrs.src;
-    }
-    if (source.startsWith("data:")) {
-      Konva.Image.fromURL(source, (imageNode: Konva.Image) => {
-        let width;
-        let height;
-        if (imageNode.width() > imageNode.height()) {
+      const newImage = new Image();
+      newImage.onload = () => {
+        setImageSrc(newImage);
+
+        const stageWidth = stage.stageRef.current?.width() || 0;
+        const stageHeight = stage.stageRef.current?.height() || 0;
+
+        let width, height;
+        if (newImage.width > newImage.height) {
           width = decimalUpToSeven(500);
-          height = decimalUpToSeven(
-            width * (imageNode.height() / imageNode.width())
-          );
+          height = decimalUpToSeven(width * (newImage.height / newImage.width));
         } else {
           height = decimalUpToSeven(500);
-          width = decimalUpToSeven(
-            height * (imageNode.width() / imageNode.height())
-          );
+          width = decimalUpToSeven(height * (newImage.width / newImage.height));
         }
-        imageNode.width(width);
-        imageNode.height(height);
-        const newBase64 = imageNode.toDataURL({
-          x: 0,
-          y: 0,
-          width,
-          height,
-          pixelRatio: 1,
+
+        const x = (stageWidth - width) / 2;
+        const y = (stageHeight - height) / 2;
+
+        data.attrs.x = x;
+        data.attrs.y = y;
+        data.attrs.width = width;
+        data.attrs.height = height;
+      };
+      newImage.crossOrigin = "Anonymous";
+      const source = attrs.src;
+      if (source.startsWith("data:")) {
+        Konva.Image.fromURL(source, (imageNode: Konva.Image) => {
+          let width;
+          let height;
+          if (imageNode.width() > imageNode.height()) {
+            width = decimalUpToSeven(500);
+            height = decimalUpToSeven(
+              width * (imageNode.height() / imageNode.width())
+            );
+          } else {
+            height = decimalUpToSeven(500);
+            width = decimalUpToSeven(
+              height * (imageNode.width() / imageNode.height())
+            );
+          }
+          imageNode.width(width);
+          imageNode.height(height);
+          const newBase64 = imageNode.toDataURL({
+            x: 0,
+            y: 0,
+            width,
+            height,
+            pixelRatio: 1,
+          });
+          newImage.src = newBase64;
         });
-        newImage.src = newBase64;
-      });
-      return;
+        return;
+      }
+      newImage.src = source;
     }
-    newImage.src = source;
+
+    return () => {
+      if (anim) {
+        anim.stop();
+      }
+    };
   }, [attrs.src]);
 
   useEffect(() => {
@@ -125,7 +145,7 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
       scaleX={attrs.scaleX}
       scaleY={attrs.scaleY}
       rotation={attrs.rotation ?? 0}
-      draggable={attrs.src.endsWith(".gif")? false : true}
+      draggable={attrs.src.endsWith(".gif") ? false : true}
       onDragMove={onDragMoveFrame}
       onDragEnd={onDragEndFrame}
     />

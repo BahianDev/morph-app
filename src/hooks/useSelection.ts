@@ -18,7 +18,7 @@ const useSelection = (transformer: ReturnType<typeof useTransformer>) => {
     }
     if (itemList) {
       const newNodeList = itemList.filter(
-        (item: any, _, array) =>
+        (item: any) =>
           item.attrs["data-item-type"] === "frame" ||
           item.getParent().attrs["name"] !== "label-group"
       );
