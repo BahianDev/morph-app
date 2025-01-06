@@ -119,10 +119,14 @@ export default function Home() {
                           ) && "bg-primary"
                         }`}
                       >
-                        <img
+                        <Image
                           src={`http://localhost:1337${trait.image[0].url}`}
+                          alt="Picture of the author"
                           className="h-full w-full"
-                        />
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                          }}                        />
                       </div>
                     ))}
               </div>

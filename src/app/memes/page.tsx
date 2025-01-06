@@ -1,121 +1,136 @@
 "use client";
 
 import ImageThumbnail from "@/config/ImageThumbnail";
-import { StageData } from "@/contexts/Stage";
-import useDragAndDrop from "@/hooks/useDragAndDrop";
-import useItem from "@/hooks/useItem";
-import useSelection from "@/hooks/useSelection";
-import useStage from "@/hooks/useStage";
-import useTransformer from "@/hooks/useTransformer";
 import { api } from "@/services/api";
 import { Meme } from "@/types";
-import Drop from "@/util/Drop";
-import ImageItem, { ImageItemProps } from "@/view/object/image";
-import { KonvaEventObject } from "konva/lib/Node";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Stage, Layer, Transformer } from "react-konva";
-import { getScaledMousePosition } from "@/util/getScaledMousePosition";
-
+import { Canvas, FabricImage } from "fabric";
+import { useEffect, useRef, useState } from "react";
+import SuperGif from "libgif";
+import { loadedImg } from "@/config/loadedImg";
+import { canvasToFile } from "@/util/canvasToFile";
 
 export default function Memes() {
+  const canvasRef = useRef<any>(null);
   const sections = ["Stickers", "GIFs"];
 
+  const [canvas, setCanvas] = useState<any>(null);
+  // const [imageGenerated, setImageGenerated] = useState<any>(null);
+  const [_canvasImages, setCanvasImages] = useState<any[]>([]);
+  const [_gifInterval, setGifInverval] = useState<number>(41);
+
   const [tab, setTab] = useState("Stickers");
-  const transformer = useTransformer();
 
-  const { onSelectItem, clearSelection } =
-    useSelection(transformer);
-
-  const { stageRef } = useStage();
-  const { onDropOnStage } = useDragAndDrop(stageRef);
-  const { stageData } = useItem();
-
-  const sortedStageData = useMemo(
-    () =>
-      stageData.sort((a, b) => {
-        if (a.attrs.zIndex === b.attrs.zIndex) {
-          if (a.attrs.zIndex < 0) {
-            return b.attrs.updatedAt - a.attrs.updatedAt;
-          }
-          return a.attrs.updatedAt - b.attrs.updatedAt;
-        }
-        return a.attrs.zIndex - b.attrs.zIndex;
-      }),
-    [stageData]
-  );
-
-  const [container, setContainer] = useState<HTMLDivElement>();
-
-  const setStateSizeToFitIn = useCallback(() => {
-    if (!stageRef.current || !stageRef.current.container().parentElement) {
-      return;
-    }
-    stageRef.current.width(500);
-    stageRef.current.height(500);
-    stageRef.current.batchDraw();
-    stageRef.current.container().style.backgroundColor = "#D9D9D9";
-  }, [stageRef]);
+  const imgOptions: any = {
+    selectable: false,
+    visible: false,
+    originX: "left",
+    originY: "top",
+  };
 
   useEffect(() => {
-    window.addEventListener("load", setStateSizeToFitIn);
-    window.addEventListener("resize", setStateSizeToFitIn);
-    return () => window.removeEventListener("resize", setStateSizeToFitIn);
-  }, [setStateSizeToFitIn]);
+    if (canvasRef.current) {
+      const initCanvas = new Canvas(canvasRef.current, {
+        width: 500,
+        height: 500,
+        selectionBorderColor: '#14A800',
+        selectionColor: '#14A800',
+      });
 
-  useEffect(() => {
-    if (stageRef.current) {
-      setContainer(stageRef.current!.container());
+      initCanvas.backgroundColor = "transparent";
+
+      initCanvas.renderAll();
+      setCanvas(initCanvas);
+      return () => {
+        initCanvas.dispose();
+      };
     }
   }, []);
 
-  const onSelectEmptyBackground = useCallback(
-    (e: KonvaEventObject<MouseEvent>) => {
-      e.target.getType() === "Stage" && onSelectItem(e);
-    },
-    [onSelectItem]
-  );
+  const handleAddGif = async (url: string) => {
+    const imgEl = document.createElement("img");
+    imgEl.setAttribute("rel:animated_src", url);
+    imgEl.setAttribute("rel:auto_play", "0");
+    const div = document.createElement("div");
+    div.appendChild(imgEl);
 
-  const onMouseDownOnStage = useCallback(
-    (e: KonvaEventObject<MouseEvent>) => {
-      onSelectEmptyBackground(e);
-      const stage = e.target.getStage();
-      if (!stage) {
-        return;
+    const gif = new SuperGif({ gif: imgEl });
+    const images: string[] = [];
+    let i: number = 0;
+
+    const image = new Image();
+    image.src = url;
+    await loadedImg(image);
+
+    const { width } = image;
+
+    const scale: number = 500 / width;
+
+    Object.assign(imgOptions, { scaleX: scale, scaleY: scale });
+
+    gif.load(async () => {
+      const interval = gif.get_duration_ms() / gif.get_length();
+      setGifInverval(interval);
+
+      for (let i: number = 1; i <= gif.get_length(); i++) {
+        gif.move_to(i);
+        const file = canvasToFile(gif.get_canvas(), `gif-${i}`);
+        images.push(URL.createObjectURL(file));
       }
 
-      const selectBox = stage.findOne(".select-box");
-      const scaledCurrentMousePos = getScaledMousePosition(stage, e.evt);
-      const currentMousePos = stage.getPointerPosition();
-      if (selectBox) {
-        selectBox.position(scaledCurrentMousePos);
-        if (
-          stage.getAllIntersections(currentMousePos).length ||
-          stageRef.current?.draggable()
-        ) {
-          selectBox.visible(false);
-          return;
+      const canvasImages: any[] = [];
+
+      for (let j = 0; j < images.length; j++) {
+        const imgElement = new Image();
+        imgElement.src = images[j];
+        const img = new FabricImage(imgElement, imgOptions);
+
+        const loadImageOptions = { crossOrigin: "anonymous", ...imgOptions };
+        await img.setSrc(images[j], loadImageOptions);
+
+        canvas.add(img);
+        canvas.setActiveObject(img);
+
+        canvasImages.push(img);
+      }
+
+      images.splice(0);
+
+      setInterval(() => {
+        if (i >= canvasImages.length) i = 0;
+        const tempCanvasImages = [];
+        for (const index of canvasImages.keys()) {
+          let visible: boolean = false;
+          if (index === i) visible = true;
+          canvasImages[index].setOptions({
+            visible,
+          });
+
+          tempCanvasImages.push(canvasImages[index]);
         }
-        selectBox.visible(true);
-      }
-    },
-    [onSelectEmptyBackground]
-  );
+        setCanvasImages(tempCanvasImages);
+        i++;
 
-  const renderObject = (item: StageData) => {
-    switch (item.attrs["data-item-type"]) {
-      case "image":
-        return (
-          <ImageItem
-            key={`image-${item.id}`}
-            data={item as ImageItemProps["data"]}
-            transformer={transformer}
-            onSelect={onSelectItem}
-          />
-        );
-      default:
-        return null;
-    }
+        try {
+          canvas?.renderAll();
+        } catch (e) {
+          console.log(e);
+        }
+      }, interval);
+    });
+  };
+
+  const handleAddStikcer = async (url: string) => {
+    FabricImage.fromURL(url).then((img) => {
+      const oImg = img;
+      oImg.set({ left: 20, top: 20 });
+      oImg.scale(0.1);
+      oImg.borderColor= '#14A800'
+      oImg.borderScaleFactor = 2
+      oImg.cornerColor = '#14A800'
+      canvas.add(oImg);
+      canvas.setActiveObject(oImg);
+    });
   };
 
   const { data: memes } = useQuery({
@@ -136,30 +151,7 @@ export default function Memes() {
         <div className="flex space-x-5 flex-col lg:flex-row w-full">
           <div className="flex flex-col lg:flex-row w-full gap-5">
             <div className="bg-custom-gray rounded-xl relative w-[500px] h-[500px]">
-              <Stage
-                ref={stageRef}
-                onMouseDown={onMouseDownOnStage}
-                width={500}
-                height={500}
-                draggable={false}
-              >
-                <Layer>
-                  {stageData.length
-                    ? sortedStageData.map((item) => renderObject(item))
-                    : null}
-
-                  <Transformer
-                    ref={transformer.transformerRef}
-                    keepRatio
-                    shouldOverdrawWholeArea
-                    boundBoxFunc={(_, newBox) => newBox}
-                    onTransformEnd={transformer.onTransformEnd}
-                  />
-                </Layer>
-                {container ? (
-                  <Drop callback={onDropOnStage} targetDOMElement={container} />
-                ) : null}
-              </Stage>
+              <canvas ref={canvasRef} className="absolute inset-0" />
             </div>
             <div className="bg-custom-gray rounded-xl h-full lg:flex-1">
               <div className="flex overflow-x-scroll gap-8 items-center px-4 bg-tamber-gray h-16 w-full rounded-t-xl">
@@ -184,7 +176,17 @@ export default function Memes() {
                     .map((trait, key) => (
                       <div
                         key={key}
-                        onClick={clearSelection}
+                        onClick={async () => {
+                          if (tab === "GIFs") {
+                            return await handleAddGif(
+                              "http://localhost:1337" + trait.image[0].url
+                            );
+                          } else if (tab === "Stickers") {
+                            return await handleAddStikcer(
+                              "http://localhost:1337" + trait.image[0].url
+                            );
+                          }
+                        }}
                         className={`border border-gray-500 w-24 h-24 rounded-lg cursor-pointer`}
                       >
                         <ImageThumbnail

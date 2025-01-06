@@ -1,23 +1,18 @@
-import Drag from "@/util/Drag";
-import TRIGGER from "@/config/trigger";
+import Image from "next/image";
 
 interface ImageThumbnailProps {
-  src: string
+  src: string;
 }
 
 const ImageThumbnail: React.FC<ImageThumbnailProps> = ({ src }) => {
   return (
     <div className="w-24 h-24 ">
-      <Drag
-        dragType="copyMove"
-        dragSrc={{
-          trigger: TRIGGER.INSERT.IMAGE,
-          "data-item-type": 'image',
-          src,
-        }}
-      >
-        <img alt={'base'} src={src} />
-      </Drag>
+      <Image
+        alt={"base"}
+        src={src}
+        width={80}
+        height={80}
+      />
     </div>
   );
 };
