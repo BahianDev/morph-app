@@ -1,8 +1,9 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import {
-  phantomWallet,
   rainbowWallet,
   walletConnectWallet,
+  bitgetWallet,
+  metaMaskWallet
 } from "@rainbow-me/rainbowkit/wallets";
 import { polygon } from "wagmi/chains";
 
@@ -14,7 +15,12 @@ export const config = getDefaultConfig({
   wallets: [
     {
       groupName: "Recommended",
-      wallets: [rainbowWallet, walletConnectWallet, phantomWallet],
+      wallets: [
+        bitgetWallet,
+        metaMaskWallet,
+        rainbowWallet,
+        walletConnectWallet,
+      ],
     },
   ],
 });

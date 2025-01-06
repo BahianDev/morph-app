@@ -3,20 +3,22 @@
 import { api } from "@/services/api";
 import { Trait } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 
 export default function Morphys() {
-  const [tab, setTab] = useState("Lower");
+  const [tab, setTab] = useState("Background");
   const [mountedImage, setMountedImage] = useState([
     {
       name: "base",
       type: "Base",
-      url: "/base.png",
+      url: "http://localhost:1337/uploads/base_d6563af965.png",
     },
   ]);
 
   const sections = [
+    "Background",
     "Lower",
     "Hat",
     "Upper",
@@ -30,7 +32,7 @@ export default function Morphys() {
   const { data: traits } = useQuery({
     queryKey: ["traits-list"],
     queryFn: (): Promise<Trait[]> =>
-      api.get(`traits?populate=*`).then((response) => response.data.data),
+      api.get(`traits?populate=*&pagination[pageSize]=100`).then((response) => response.data.data),
     refetchOnWindowFocus: false,
     initialData: [],
   });
@@ -39,28 +41,63 @@ export default function Morphys() {
     (type: string, url: string, name: string) => {
       setMountedImage((prev) => {
         const existingIndex = prev.findIndex((item) => item.type === type);
-
+  
+        let updated;
+  
         if (existingIndex !== -1) {
-          const updated = [...prev];
+          updated = [...prev];
           updated[existingIndex] = { type, url, name };
-          return updated;
+        } else {
+          updated = [...prev, { type, url, name }];
         }
-
-        return [...prev, { type, url, name }];
+  
+        return updated.sort((a, b) => {
+          if (a.type === "Background") return -1;
+          if (b.type === "Background") return 1;
+          if (a.type === "Base") return -1;
+          if (b.type === "Base") return 1;
+          return 0;
+        });
       });
     },
     []
   );
+  
 
   const resetTraitImage = useCallback(() => {
     setMountedImage([
       {
         name: "base",
         type: "Base",
-        url: "/base.png",
+        url: "http://localhost:1337/uploads/base_d6563af965.png",
       },
     ]);
   }, []);
+
+  const handleDownload = useCallback(async () => {
+    const response = await axios.post(
+      "/morphys/download",
+      {
+        height: 2048,
+        width: 2048,
+        layers: mountedImage.map((image) => image.url),
+      },
+      { responseType: "arraybuffer" }
+    );
+
+    const blob = new Blob([response.data], { type: "image/png" });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "generated-image.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }, [mountedImage]);
 
   return (
     <div className="flex flex-col items-center justify-items-center min-h-screen py-8">
@@ -122,7 +159,7 @@ export default function Morphys() {
                         <Image
                           src={`http://localhost:1337${trait.image[0].url}`}
                           alt="Picture of the author"
-                          className="h-full w-full"
+                          className="h-full w-full rounded-lg"
                           width={80}
                           height={80}
                         />
@@ -139,7 +176,10 @@ export default function Morphys() {
           >
             RESET
           </button>
-          <button className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2">
+          <button
+            onClick={handleDownload}
+            className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
+          >
             DOWNLOAD
           </button>
           <button className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2">
