@@ -14,7 +14,7 @@ export default function Home() {
             </Link>
             <Link href="/memes" className="flex flex-col items-center">
                 <div className="bg-custom-gray hover:bg-primary transition-all duration-1000 p-4 rounded-xl cursor-pointer">
-                    <Image src="/home/morphy.png" width={500} height={500} alt="MORPH"/>
+                    <Image src="/home/memes.png" width={500} height={500} alt="MORPH"/>
                 </div>
                 <span className="font-bold text-3xl">MORPH A MEME</span>
             </Link>

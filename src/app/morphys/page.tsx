@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 
-export default function Home() {
+export default function Morphys() {
   const [tab, setTab] = useState("Lower");
   const [mountedImage, setMountedImage] = useState([
     {
@@ -123,10 +123,9 @@ export default function Home() {
                           src={`http://localhost:1337${trait.image[0].url}`}
                           alt="Picture of the author"
                           className="h-full w-full"
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                          }}                        />
+                          width={80}
+                          height={80}
+                        />
                       </div>
                     ))}
               </div>
@@ -134,7 +133,10 @@ export default function Home() {
           </div>
         </div>
         <div>
-          <button onClick={resetTraitImage} className="focus:outline-none text-black border-2 border-black bg-transparent font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2">
+          <button
+            onClick={resetTraitImage}
+            className="focus:outline-none text-black border-2 border-black bg-transparent font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
+          >
             RESET
           </button>
           <button className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2">

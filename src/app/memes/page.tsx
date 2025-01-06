@@ -4,8 +4,8 @@ import ImageThumbnail from "@/config/ImageThumbnail";
 import { api } from "@/services/api";
 import { Meme } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { Canvas, FabricImage } from "fabric";
-import { useEffect, useRef, useState } from "react";
+import { Canvas, Control, FabricImage, FabricObject, Textbox } from "fabric";
+import { useCallback, useEffect, useRef, useState } from "react";
 import SuperGif from "libgif";
 import { loadedImg } from "@/config/loadedImg";
 import { canvasToFile } from "@/util/canvasToFile";
@@ -16,8 +16,8 @@ export default function Memes() {
 
   const [canvas, setCanvas] = useState<any>(null);
   // const [imageGenerated, setImageGenerated] = useState<any>(null);
-  const [_canvasImages, setCanvasImages] = useState<any[]>([]);
-  const [_gifInterval, setGifInverval] = useState<number>(41);
+  const [canvasImages, setCanvasImages] = useState<any[]>([]);
+  const [gifInterval, setGifInverval] = useState<number>(41);
 
   const [tab, setTab] = useState("Stickers");
 
@@ -28,13 +28,59 @@ export default function Memes() {
     originY: "top",
   };
 
+  function renderIcon(
+    ctx: CanvasRenderingContext2D,
+    left: number,
+    top: number,
+    iconSrc: string
+  ) {
+    const size = 20;
+    const img = new Image();
+    img.src = iconSrc;
+
+    img.onload = () => {
+      ctx.save();
+      ctx.translate(left, top);
+      ctx.drawImage(img, -size / 2, -size / 2, size, size);
+      ctx.restore();
+    };
+  }
+
+  const deleteIcon =
+    "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg version='1.1' id='Ebene_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='595.275px' height='595.275px' viewBox='200 215 230 470' xml:space='preserve'%3E%3Ccircle style='fill:%23F44336;' cx='299.76' cy='439.067' r='218.516'/%3E%3Cg%3E%3Crect x='267.162' y='307.978' transform='matrix(0.7071 -0.7071 0.7071 0.7071 -222.6202 340.6915)' style='fill:white;' width='65.545' height='262.18'/%3E%3Crect x='266.988' y='308.153' transform='matrix(0.7071 0.7071 -0.7071 0.7071 398.3889 -83.3116)' style='fill:white;' width='65.544' height='262.179'/%3E%3C/g%3E%3C/svg%3E";
+
+  const handleDeleteActiveObject = useCallback(() => {
+    const activeObject = canvas.getActiveObject();
+
+    if (activeObject) {
+      if (activeObject instanceof Textbox && activeObject.isEditing) {
+        return;
+      }
+      canvas.remove(activeObject);
+      canvas.renderAll();
+    }
+  }, [canvas]);
+
+
+  const applyCustomControlsToObject = (object: FabricObject) => {
+    object.controls.deleteControl = new Control({
+      x: 0.5,
+      y: -0.5,
+      offsetY: -15,
+      offsetX: 20,
+      cursorStyle: "pointer",
+      render: (ctx, left, top) => renderIcon(ctx, left, top, deleteIcon),
+      mouseUpHandler: handleDeleteActiveObject,
+    });
+  };
+
   useEffect(() => {
     if (canvasRef.current) {
       const initCanvas = new Canvas(canvasRef.current, {
         width: 500,
         height: 500,
-        selectionBorderColor: '#14A800',
-        selectionColor: '#14A800',
+        selectionBorderColor: "#14A800",
+        selectionColor: "#14A800",
       });
 
       initCanvas.backgroundColor = "transparent";
@@ -125,9 +171,10 @@ export default function Memes() {
       const oImg = img;
       oImg.set({ left: 20, top: 20 });
       oImg.scale(0.1);
-      oImg.borderColor= '#14A800'
-      oImg.borderScaleFactor = 2
-      oImg.cornerColor = '#14A800'
+      oImg.borderColor = "#14A800";
+      oImg.borderScaleFactor = 2;
+      oImg.cornerColor = "#14A800";
+      applyCustomControlsToObject(oImg);
       canvas.add(oImg);
       canvas.setActiveObject(oImg);
     });
