@@ -9,10 +9,50 @@ export default function Landing() {
           READY TO <strong className="text-primary">MORPH</strong>?
         </h1>
         <div className="flex gap-3">
-          <Image src="/landing/1.png" width={300} height={400} alt="1" />
-          <Image src="/landing/2.png" width={300} height={400} alt="2" />
-          <Image src="/landing/3.png" width={300} height={400} alt="3" />
-          <Image src="/landing/4.png" width={300} height={400} alt="3" />
+          <Image
+            src="/landing/1.png"
+            width={300}
+            height={400}
+            alt="1"
+            priority
+            style={{
+              width: "auto",
+              height: "auto",
+            }}
+          />
+          <Image
+            src="/landing/2.png"
+            width={300}
+            height={400}
+            alt="2"
+            priority
+            style={{
+              width: "auto",
+              height: "auto",
+            }}
+          />
+          <Image
+            src="/landing/3.png"
+            width={300}
+            height={400}
+            alt="3"
+            priority
+            style={{
+              width: "auto",
+              height: "auto",
+            }}
+          />
+          <Image
+            src="/landing/4.png"
+            width={300}
+            height={400}
+            alt="3"
+            priority
+            style={{
+              width: "auto",
+              height: "auto",
+            }}
+          />
         </div>
         <Link
           href="/home"

@@ -10,8 +10,9 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = ({ src }) => {
       <Image
         alt={"base"}
         src={src}
-        width={80}
-        height={80}
+        width={94}
+        height={94}
+        className="rounded-lg"
       />
     </div>
   );

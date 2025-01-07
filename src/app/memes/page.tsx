@@ -9,13 +9,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import SuperGif from "libgif";
 import { loadedImg } from "@/config/loadedImg";
 import { canvasToFile } from "@/util/canvasToFile";
+import { deleteIcon } from "@/util/deleteIcon";
+import { renderIcon } from "@/util/renderIcon";
+import { createGIF } from "@/util/createGIF";
+import { base64ToBlob } from "@/util/base64ToBlob";
+import axios from "axios";
 
 export default function Memes() {
   const canvasRef = useRef<any>(null);
   const sections = ["Stickers", "GIFs"];
 
   const [canvas, setCanvas] = useState<any>(null);
-  // const [imageGenerated, setImageGenerated] = useState<any>(null);
   const [canvasImages, setCanvasImages] = useState<any[]>([]);
   const [gifInterval, setGifInverval] = useState<number>(41);
 
@@ -28,27 +32,6 @@ export default function Memes() {
     originY: "top",
   };
 
-  function renderIcon(
-    ctx: CanvasRenderingContext2D,
-    left: number,
-    top: number,
-    iconSrc: string
-  ) {
-    const size = 20;
-    const img = new Image();
-    img.src = iconSrc;
-
-    img.onload = () => {
-      ctx.save();
-      ctx.translate(left, top);
-      ctx.drawImage(img, -size / 2, -size / 2, size, size);
-      ctx.restore();
-    };
-  }
-
-  const deleteIcon =
-    "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg version='1.1' id='Ebene_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='595.275px' height='595.275px' viewBox='200 215 230 470' xml:space='preserve'%3E%3Ccircle style='fill:%23F44336;' cx='299.76' cy='439.067' r='218.516'/%3E%3Cg%3E%3Crect x='267.162' y='307.978' transform='matrix(0.7071 -0.7071 0.7071 0.7071 -222.6202 340.6915)' style='fill:white;' width='65.545' height='262.18'/%3E%3Crect x='266.988' y='308.153' transform='matrix(0.7071 0.7071 -0.7071 0.7071 398.3889 -83.3116)' style='fill:white;' width='65.544' height='262.179'/%3E%3C/g%3E%3C/svg%3E";
-
   const handleDeleteActiveObject = useCallback(() => {
     const activeObject = canvas.getActiveObject();
 
@@ -60,7 +43,6 @@ export default function Memes() {
       canvas.renderAll();
     }
   }, [canvas]);
-
 
   const applyCustomControlsToObject = (object: FabricObject) => {
     object.controls.deleteControl = new Control({
@@ -101,11 +83,12 @@ export default function Memes() {
     div.appendChild(imgEl);
 
     const gif = new SuperGif({ gif: imgEl });
-    const images: string[] = [];
+    let images: string[] = [];
     let i: number = 0;
 
     const image = new Image();
     image.src = url;
+    image.crossOrigin = "anonymous";
     await loadedImg(image);
 
     const { width } = image;
@@ -124,11 +107,12 @@ export default function Memes() {
         images.push(URL.createObjectURL(file));
       }
 
-      const canvasImages: any[] = [];
+      let canvasImages: any[] = [];
 
       for (let j = 0; j < images.length; j++) {
         const imgElement = new Image();
         imgElement.src = images[j];
+        imgElement.crossOrigin = "anonymous";
         const img = new FabricImage(imgElement, imgOptions);
 
         const loadImageOptions = { crossOrigin: "anonymous", ...imgOptions };
@@ -167,7 +151,9 @@ export default function Memes() {
   };
 
   const handleAddStikcer = async (url: string) => {
-    FabricImage.fromURL(url).then((img) => {
+    FabricImage.fromURL(url, {
+      crossOrigin: "anonymous",
+    }).then((img) => {
       const oImg = img;
       oImg.set({ left: 20, top: 20 });
       oImg.scale(0.1);
@@ -179,6 +165,134 @@ export default function Memes() {
       canvas.setActiveObject(oImg);
     });
   };
+
+  const handleDownload = useCallback(async () => {
+    let i = 0;
+    const dataImages: Array<any> = [];
+    let imageGenerated: any;
+
+    const processFrames = async (): Promise<void> => {
+      return new Promise((resolve) => {
+        const processFrame = async () => {
+          if (i >= canvasImages.length) {
+            try {
+              const gif = await createGIF(dataImages, {
+                gifWidth: 1080,
+                gifHeight: (1080 * 1080) / 1080,
+                interval: gifInterval / 1 / 1000,
+                sampleInterval: 10,
+                progressCallback: (progress: number) => {},
+              });
+              imageGenerated = gif;
+              dataImages.length = 0;
+            } catch (e) {
+              console.error("Erro ao criar o GIF:", e);
+            }
+            resolve();
+            return;
+          }
+
+          for (const index of canvasImages.keys()) {
+            canvasImages[index].set("visible", index === i);
+          }
+
+          try {
+            dataImages.push(canvas.toDataURL());
+          } catch (e) {
+            console.error("Erro ao capturar o frame:", e);
+          }
+
+          i++;
+          setTimeout(processFrame, 40);
+        };
+
+        processFrame();
+      });
+    };
+
+    await processFrames();
+
+    const el = document.createElement("a");
+    el.href = URL.createObjectURL(base64ToBlob(imageGenerated));
+    el.download = "headphone.gif";
+    el.style.display = "none";
+    document.body.appendChild(el);
+    el.click();
+    document.body.removeChild(el);
+  }, [canvasImages, canvas, gifInterval]);
+
+  const handleMorph = useCallback(async () => {
+    let i = 0;
+    const dataImages: Array<any> = [];
+    let imageGenerated: any;
+
+    const processFrames = async (): Promise<void> => {
+      return new Promise((resolve) => {
+        const processFrame = async () => {
+          if (i >= canvasImages.length) {
+            try {
+              const gif = await createGIF(dataImages, {
+                gifWidth: 1080,
+                gifHeight: (1080 * 1080) / 1080,
+                interval: gifInterval / 1 / 1000,
+                sampleInterval: 10,
+                progressCallback: (progress: number) => {},
+              });
+              imageGenerated = gif;
+              dataImages.length = 0;
+            } catch (e) {
+              console.error("Erro ao criar o GIF:", e);
+            }
+            resolve();
+            return;
+          }
+
+          for (const index of canvasImages.keys()) {
+            canvasImages[index].set("visible", index === i);
+          }
+
+          try {
+            dataImages.push(canvas.toDataURL());
+          } catch (e) {
+            console.error("Erro ao capturar o frame:", e);
+          }
+
+          i++;
+          setTimeout(processFrame, 40);
+        };
+
+        processFrame();
+      });
+    };
+
+    await processFrames();
+
+    try {
+      const formData = new FormData();
+      formData.set("file", base64ToBlob(imageGenerated));
+
+      const response = await axios.post("/memes/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 200) {
+        console.log("GIF enviado com sucesso:", response.data);
+      } else {
+        console.error("Erro ao enviar o GIF:", response.data);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Erro na solicitação Axios:",
+          error.response?.data || error.message
+        );
+      } else {
+        console.error("Erro inesperado:", error);
+      }
+    }
+  }, [canvasImages, canvas, gifInterval]);
 
   const { data: memes } = useQuery({
     queryKey: ["memes-list"],
@@ -198,7 +312,9 @@ export default function Memes() {
         <div className="flex space-x-5 flex-col lg:flex-row w-full">
           <div className="flex flex-col lg:flex-row w-full gap-5">
             <div className="bg-custom-gray rounded-xl relative w-[500px] h-[500px]">
-              <canvas ref={canvasRef} className="absolute inset-0" />
+              <div className="canvas_w">
+                <canvas ref={canvasRef} className="absolute inset-0" />
+              </div>
             </div>
             <div className="bg-custom-gray rounded-xl h-full lg:flex-1">
               <div className="flex overflow-x-scroll gap-8 items-center px-4 bg-tamber-gray h-16 w-full rounded-t-xl">
@@ -249,10 +365,16 @@ export default function Memes() {
           <button className="focus:outline-none text-black border-2 border-black bg-transparent font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2">
             RESET
           </button>
-          <button className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2">
+          <button
+            onClick={handleDownload}
+            className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
+          >
             DOWNLOAD
           </button>
-          <button className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2">
+          <button
+            onClick={handleMorph}
+            className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
+          >
             MORPH
           </button>
         </div>
