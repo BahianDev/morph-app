@@ -14,8 +14,6 @@ export async function POST(request: NextRequest) {
   const data = await request.formData();
   const file = data.get("file") as File;
 
-  console.log(file);
-
   if (!file) {
     return NextResponse.json({ error: "File is required" }, { status: 400 });
   }

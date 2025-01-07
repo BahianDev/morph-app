@@ -17,13 +17,13 @@ import axios from "axios";
 
 export default function Memes() {
   const canvasRef = useRef<any>(null);
-  const sections = ["Stickers", "GIFs"];
+  const sections = ["Background", "Stickers", "GIFs"];
 
   const [canvas, setCanvas] = useState<any>(null);
   const [canvasImages, setCanvasImages] = useState<any[]>([]);
   const [gifInterval, setGifInverval] = useState<number>(41);
 
-  const [tab, setTab] = useState("Stickers");
+  const [tab, setTab] = useState("Background");
 
   const imgOptions: any = {
     selectable: false,
@@ -340,7 +340,7 @@ export default function Memes() {
                       <div
                         key={key}
                         onClick={async () => {
-                          if (tab === "GIFs") {
+                          if (tab === "GIFs" || tab === "Background") {
                             return await handleAddGif(
                               "http://localhost:1337" + trait.image[0].url
                             );
