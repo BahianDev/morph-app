@@ -23,7 +23,5 @@ export const generateImage = async (props: GenerateImagePros) => {
     ctx.drawImage(image, 0, 0, width, height);
   });
 
-  console.log(canvas)
-
   return canvas.toBuffer("image/png");
 };

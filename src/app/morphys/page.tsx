@@ -32,7 +32,9 @@ export default function Morphys() {
   const { data: traits } = useQuery({
     queryKey: ["traits-list"],
     queryFn: (): Promise<Trait[]> =>
-      api.get(`traits?populate=*&pagination[pageSize]=100`).then((response) => response.data.data),
+      api
+        .get(`traits?populate=*&pagination[pageSize]=100`)
+        .then((response) => response.data.data),
     refetchOnWindowFocus: false,
     initialData: [],
   });
@@ -41,16 +43,16 @@ export default function Morphys() {
     (type: string, url: string, name: string) => {
       setMountedImage((prev) => {
         const existingIndex = prev.findIndex((item) => item.type === type);
-  
+
         let updated;
-  
+
         if (existingIndex !== -1) {
           updated = [...prev];
           updated[existingIndex] = { type, url, name };
         } else {
           updated = [...prev, { type, url, name }];
         }
-  
+
         return updated.sort((a, b) => {
           if (a.type === "Background") return -1;
           if (b.type === "Background") return 1;
@@ -62,7 +64,6 @@ export default function Morphys() {
     },
     []
   );
-  
 
   const resetTraitImage = useCallback(() => {
     setMountedImage([
@@ -97,6 +98,31 @@ export default function Morphys() {
     document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
+  }, [mountedImage]);
+
+  const handleMorph = useCallback(async () => {
+    const attributes = mountedImage
+      .filter((image) => image.name !== "base")
+      .map((image) => {
+        return {
+          trait_type: image.type,
+          value: image.name,
+        };
+      });
+
+    const response = await axios.post(
+      "/api",
+      {
+        height: 2048,
+        width: 2048,
+        layers: mountedImage.map((image) => image.url),
+        attributes: attributes,
+        tokenId: 1
+      },
+      { responseType: "arraybuffer" }
+    );
+
+    return response
   }, [mountedImage]);
 
   return (
@@ -182,7 +208,10 @@ export default function Morphys() {
           >
             DOWNLOAD
           </button>
-          <button className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2">
+          <button
+            onClick={handleMorph}
+            className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
+          >
             MORPH
           </button>
         </div>
