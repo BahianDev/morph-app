@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   });
 
   const data = await request.json();
-  
+
   const image = await generateImage({
     height: data.height,
     width: data.width,
@@ -62,5 +62,5 @@ export async function POST(request: NextRequest) {
     }),
   );
 
-  return NextResponse.json({ message: "Hello World" }, { status: 200 });
+  return NextResponse.json({ message: "Ok" }, { status: 200 });
 }

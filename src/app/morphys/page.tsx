@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Image from "next/image";
 import { useCallback, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Morphys() {
   const [tab, setTab] = useState("Background");
@@ -101,6 +102,8 @@ export default function Morphys() {
   }, [mountedImage]);
 
   const handleMorph = useCallback(async () => {
+    toast.loading("Uploading metadata...");
+
     const attributes = mountedImage
       .filter((image) => image.name !== "base")
       .map((image) => {
@@ -122,6 +125,8 @@ export default function Morphys() {
       { responseType: "arraybuffer" }
     );
 
+    toast.dismiss();
+    
     return response
   }, [mountedImage]);
 
