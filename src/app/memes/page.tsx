@@ -15,7 +15,11 @@ import { createGIF } from "@/util/createGIF";
 import { base64ToBlob } from "@/util/base64ToBlob";
 import abi from "@/contracts/Memes.abi.json";
 import axios from "axios";
-import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
+import {
+  readContract,
+  waitForTransactionReceipt,
+  writeContract,
+} from "@wagmi/core";
 import { config } from "../wagmi";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import toast from "react-hot-toast";
@@ -88,7 +92,7 @@ export default function Memes() {
     div.appendChild(imgEl);
 
     const gif = new SuperGif({ gif: imgEl });
-    let images: string[] = [];
+    const images: string[] = [];
     let i: number = 0;
 
     const image = new Image();
@@ -102,6 +106,8 @@ export default function Memes() {
 
     Object.assign(imgOptions, { scaleX: scale, scaleY: scale });
 
+    canvas?.clear();
+
     gif.load(async () => {
       const interval = gif.get_duration_ms() / gif.get_length();
       setGifInverval(interval);
@@ -112,7 +118,7 @@ export default function Memes() {
         images.push(URL.createObjectURL(file));
       }
 
-      let canvasImages: any[] = [];
+      const canvasImages: any[] = [];
 
       for (let j = 0; j < images.length; j++) {
         const imgElement = new Image();
@@ -186,7 +192,9 @@ export default function Memes() {
                 gifHeight: (1080 * 1080) / 1080,
                 interval: gifInterval / 1 / 1000,
                 sampleInterval: 10,
-                progressCallback: (progress: number) => {},
+                progressCallback: (progress: number) => {
+                  console.log(progress);
+                },
               });
               imageGenerated = gif;
               dataImages.length = 0;
@@ -241,7 +249,9 @@ export default function Memes() {
                 gifHeight: (1080 * 1080) / 1080,
                 interval: gifInterval / 1 / 1000,
                 sampleInterval: 10,
-                progressCallback: (progress: number) => {},
+                progressCallback: (progress: number) => {
+                  console.log(progress);
+                },
               });
               imageGenerated = gif;
               dataImages.length = 0;
@@ -289,7 +299,7 @@ export default function Memes() {
       formData.set("file", base64ToBlob(imageGenerated));
       formData.set("tokenId", String(tokenId));
 
-      const response = await axios.post("/memes/upload", formData, {
+      await axios.post("/memes/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -321,7 +331,7 @@ export default function Memes() {
       toast.custom(
         <div className="flex items-center gap-2 bg-white border-2 border-primary p-3 rounded-lg">
           <IoMdCheckmarkCircle size={10} className="w-10 h-10 text-primary" />
-  
+
           <a
             className="font-bold text-lg"
             target="_blank"
@@ -334,7 +344,7 @@ export default function Memes() {
           duration: 4000,
         }
       );
-  
+
       return transactionReceipt;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -347,6 +357,13 @@ export default function Memes() {
       }
     }
   }, [canvasImages, canvas, gifInterval]);
+
+  const handleClear = useCallback(() => {
+    canvas?.getObjects().forEach((obj: any) => {
+      if (obj.type === "textbox") clearInterval(obj?.animateInterval);
+    });
+    canvas?.clear();
+  }, [canvas]);
 
   const { data: memes } = useQuery({
     queryKey: ["memes-list"],
@@ -416,7 +433,10 @@ export default function Memes() {
           </div>
         </div>
         <div>
-          <button className="focus:outline-none text-black border-2 border-black bg-transparent font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2">
+          <button
+            onClick={handleClear}
+            className="focus:outline-none text-black border-2 border-black bg-transparent font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
+          >
             RESET
           </button>
           <button

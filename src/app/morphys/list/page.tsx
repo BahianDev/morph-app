@@ -2,7 +2,7 @@
 
 import { config } from "@/app/wagmi";
 import Card from "@/components/morphys/Card";
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount } from "wagmi";
 import abi from "@/contracts/MorphysNFTS.abi.json";
 import { useCallback, useEffect, useState } from "react";
 import { readContract } from "@wagmi/core";
@@ -48,7 +48,7 @@ export default function MorphysList() {
 
   useEffect(() => {
     getNfts();
-  }, [address]);
+  }, [address, getNfts]);
 
   return (
     <div className="flex flex-col items-center justify-items-center min-h-screen p-20">

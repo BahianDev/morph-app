@@ -2,7 +2,7 @@ import gifshot from "gifshot";
 export function createGIF(
   images: Array<string>,
   options: object
-): Promise<Function> {
+): Promise<any> {
   return new Promise((resolve, reject) => {
     gifshot.createGIF(
       {
