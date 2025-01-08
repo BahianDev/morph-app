@@ -10,7 +10,7 @@ export default function MemeLayout({
 }) {
   return (
     <section className="py-9 px-20">
-      <header className="flex justify-between">
+      {/* <header className="flex justify-between">
         <h1 className="font-extrabold text-4xl">MORPH’D</h1>
         <div className="flex gap-5">
           <div className="flex items-center gap-5 text-lg font-medium">
@@ -26,7 +26,7 @@ export default function MemeLayout({
           </div>
           <ConnectWallet />
         </div>
-      </header>
+      </header> */}
       {children}
     </section>
   );

@@ -26,7 +26,7 @@ import toast from "react-hot-toast";
 
 export default function Memes() {
   const canvasRef = useRef<any>(null);
-  const sections = ["Background", "Stickers", "GIFs"];
+  const sections = ["Background", "Stickers", "GIFs", "Text"];
 
   const [canvas, setCanvas] = useState<any>(null);
   const [canvasImages, setCanvasImages] = useState<any[]>([]);
@@ -365,6 +365,13 @@ export default function Memes() {
     canvas?.clear();
   }, [canvas]);
 
+  const handleAddText = useCallback(() => {
+    const text = new Textbox("Insert Here");
+    applyCustomControlsToObject(text);
+
+    canvas.add(text);
+  }, [canvas]);
+
   const { data: memes } = useQuery({
     queryKey: ["memes-list"],
     queryFn: (): Promise<Meme[]> =>
@@ -382,9 +389,9 @@ export default function Memes() {
         </span>
         <div className="flex space-x-5 flex-col lg:flex-row w-full">
           <div className="flex flex-col lg:flex-row w-full gap-5">
-            <div className="bg-custom-gray rounded-xl relative w-[500px] h-[500px]">
+            <div className="bg-custom-gray rounded-xl relative w-full h-96 lg:w-[500px] lg:h-[500px]">
               <div className="canvas_w">
-                <canvas ref={canvasRef} className="absolute inset-0" />
+                <canvas ref={canvasRef} className="absolute inset-0 flex-1" />
               </div>
             </div>
             <div className="bg-custom-gray rounded-xl h-full lg:flex-1">
@@ -419,6 +426,8 @@ export default function Memes() {
                             return await handleAddStikcer(
                               "http://localhost:1337" + trait.image[0].url
                             );
+                          } else if (tab === "Text") {
+                            return await handleAddText();
                           }
                         }}
                         className={`border border-gray-500 w-24 h-24 rounded-lg cursor-pointer`}
