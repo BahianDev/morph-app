@@ -13,7 +13,12 @@ import { deleteIcon } from "@/util/deleteIcon";
 import { renderIcon } from "@/util/renderIcon";
 import { createGIF } from "@/util/createGIF";
 import { base64ToBlob } from "@/util/base64ToBlob";
+import abi from "@/contracts/Memes.abi.json";
 import axios from "axios";
+import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
+import { config } from "../wagmi";
+import { IoMdCheckmarkCircle } from "react-icons/io";
+import toast from "react-hot-toast";
 
 export default function Memes() {
   const canvasRef = useRef<any>(null);
@@ -265,11 +270,24 @@ export default function Memes() {
       });
     };
 
+    toast.loading("Generating image...");
+
     await processFrames();
 
+    toast.dismiss();
+
     try {
+      toast.loading("Uploading metadata...");
+
+      const tokenId = await readContract(config, {
+        abi,
+        address: "0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff",
+        functionName: "totalSupply",
+      }).then((r) => Number(r) + 1);
+
       const formData = new FormData();
       formData.set("file", base64ToBlob(imageGenerated));
+      formData.set("tokenId", String(tokenId));
 
       const response = await axios.post("/memes/upload", formData, {
         headers: {
@@ -277,11 +295,47 @@ export default function Memes() {
         },
       });
 
-      if (response.status === 200) {
-        console.log("GIF enviado com sucesso:", response.data);
-      } else {
-        console.error("Erro ao enviar o GIF:", response.data);
-      }
+      toast.dismiss();
+
+      toast.loading("Sending transaction...");
+
+      const result = await writeContract(config, {
+        abi,
+        address: "0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff",
+        functionName: "safeMint",
+        args: [
+          `https://morphd.s3.us-east-2.amazonaws.com/memes/metadata/${tokenId}.json`,
+        ],
+      });
+
+      toast.dismiss();
+
+      toast.loading("Confirming transaction...");
+
+      const transactionReceipt = await waitForTransactionReceipt(config, {
+        hash: result,
+      });
+
+      toast.dismiss();
+
+      toast.custom(
+        <div className="flex items-center gap-2 bg-white border-2 border-primary p-3 rounded-lg">
+          <IoMdCheckmarkCircle size={10} className="w-10 h-10 text-primary" />
+  
+          <a
+            className="font-bold text-lg"
+            target="_blank"
+            href={`https://explorer-holesky.morphl2.io/token/0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff/instance/${tokenId}`}
+          >
+            Click to see Morhp Explorer
+          </a>
+        </div>,
+        {
+          duration: 4000,
+        }
+      );
+  
+      return transactionReceipt;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(
