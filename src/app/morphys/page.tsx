@@ -14,6 +14,7 @@ import {
 } from "@wagmi/core";
 import abi from "@/contracts/MorphysNFTS.abi.json";
 import { config } from "../wagmi";
+import { IoMdCheckmarkCircle } from "react-icons/io";
 
 export default function Morphys() {
   const [tab, setTab] = useState("Background");
@@ -164,7 +165,9 @@ export default function Morphys() {
     toast.dismiss();
 
     toast.custom(
-      <div className="bg-white border-2 border-primary p-3 rounded-lg">
+      <div className="flex items-center gap-2 bg-white border-2 border-primary p-3 rounded-lg">
+        <IoMdCheckmarkCircle size={10} className="w-10 h-10 text-primary" />
+
         <a
           className="font-bold text-lg"
           target="_blank"
