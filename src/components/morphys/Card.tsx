@@ -1,8 +1,18 @@
 "use client";
+
 import Image from "next/image";
 import { useState } from "react";
 
-function Card() {
+interface IProps {
+  name: string;
+  image: string;
+  attributes: {
+    trait_type: string;
+    value: string;
+  }[];
+}
+
+function Card({ name, image, attributes }: IProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleCollapse = () => {
@@ -12,11 +22,11 @@ function Card() {
   return (
     <div className="w-80 h-fit bg-white rounded-lg">
       <div className="bg-[#989898] p-2 rounded-t-lg">
-        <span className="text-white font-bold text-lg">Morphy #1</span>
+        <span className="text-white font-bold text-lg">{name}</span>
       </div>
       <div className="p-5">
         <Image
-          src={"/mock1.jpg"}
+          src={image}
           alt="morphy-card"
           width={384}
           height={384}
@@ -31,26 +41,20 @@ function Card() {
           Traits
         </button>
         <div
-          className={`overflow-hidden bg-white w-full left-0  z-50 absolute flex flex-wrap gap-2 justify-center transition-all duration-500 ${
-            isOpen ? "max-h-40 pb-4 rounded-b-lg" : "max-h-0"
+          className={`overflow-hidden bg-white w-full left-0 z-50 absolute flex flex-wrap gap-2 justify-center transition-all duration-500 ${
+            isOpen ? "max-h-72 pb-4 rounded-b-lg" : "max-h-0"
           }`}
         >
-            <div className="bg-[#AEAEAE] flex flex-col w-32 text-xs rounded-lg text-white">
-                <div className="bg-[#989898] rounded-t-lg p-1 font-bold">Background</div>
-                <div className="h-10 flex items-center px-1">Blue</div>
+          {attributes.map((attribute, key) => (
+            <div key={key} className="bg-[#AEAEAE] flex flex-col w-32 text-xs rounded-lg text-white">
+              <div className="bg-[#989898] rounded-t-lg p-1 font-bold">
+                {attribute.trait_type}
+              </div>
+              <div className="h-10 flex items-center px-1">
+                {attribute.value}
+              </div>
             </div>
-            <div className="bg-[#AEAEAE] flex flex-col w-32 text-xs rounded-lg text-white">
-                <div className="bg-[#989898] rounded-t-lg p-1 font-bold">Eyes</div>
-                <div className="h-10 flex items-center px-1">Stern</div>
-            </div>
-            <div className="bg-[#AEAEAE] flex flex-col w-32 text-xs rounded-lg text-white">
-                <div className="bg-[#989898] rounded-t-lg p-1 font-bold">Mouth</div>
-                <div className="h-10 flex items-center px-1">Bite Lip</div>
-            </div>
-            <div className="bg-[#AEAEAE] flex flex-col w-32 text-xs rounded-lg text-white">
-                <div className="bg-[#989898] rounded-t-lg p-1 font-bold">Lower</div>
-                <div className="h-10 flex items-center px-1">Pink Shorts</div>
-            </div>
+          ))}
         </div>
       </div>
     </div>
