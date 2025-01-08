@@ -7,6 +7,13 @@ import axios from "axios";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
+import {
+  readContract,
+  writeContract,
+  waitForTransactionReceipt,
+} from "@wagmi/core";
+import abi from "@/contracts/MorphysNFTS.abi.json";
+import { config } from "../wagmi";
 
 export default function Morphys() {
   const [tab, setTab] = useState("Background");
@@ -104,6 +111,12 @@ export default function Morphys() {
   const handleMorph = useCallback(async () => {
     toast.loading("Uploading metadata...");
 
+    const tokenId = await readContract(config, {
+      abi,
+      address: "0x094cd54bCC5eeC67c999a6E32C3dE2584726D918",
+      functionName: "totalSupply",
+    }).then((r) => Number(r) + 1);
+
     const attributes = mountedImage
       .filter((image) => image.name !== "base")
       .map((image) => {
@@ -120,14 +133,52 @@ export default function Morphys() {
         width: 2048,
         layers: mountedImage.map((image) => image.url),
         attributes: attributes,
-        tokenId: 1
+        tokenId,
       },
       { responseType: "arraybuffer" }
     );
 
+    console.log(response.data);
+
     toast.dismiss();
-    
-    return response
+
+    toast.loading("Sending transaction...");
+
+    const result = await writeContract(config, {
+      abi,
+      address: "0x094cd54bCC5eeC67c999a6E32C3dE2584726D918",
+      functionName: "safeMint",
+      args: [
+        `https://morphd.s3.us-east-2.amazonaws.com/morphy/metadata/${tokenId}.json`,
+      ],
+    });
+
+    toast.dismiss();
+
+    toast.loading("Confirming transaction...");
+
+    const transactionReceipt = await waitForTransactionReceipt(config, {
+      hash: result,
+    });
+
+    toast.dismiss();
+
+    toast.custom(
+      <div className="bg-white border-2 border-primary p-3 rounded-lg">
+        <a
+          className="font-bold text-lg"
+          target="_blank"
+          href={`https://explorer-holesky.morphl2.io/token/0x094cd54bCC5eeC67c999a6E32C3dE2584726D918/instance/${tokenId}`}
+        >
+          Click to see Morhp Explorer
+        </a>
+      </div>,
+      {
+        duration: 4000,
+      }
+    );
+
+    return transactionReceipt;
   }, [mountedImage]);
 
   return (
