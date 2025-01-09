@@ -369,7 +369,7 @@ export default function Memes() {
             target="_blank"
             href={`https://explorer-holesky.morphl2.io/token/0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff/instance/${tokenId}`}
           >
-            Click to see Morhp Explorer
+            Click to see Morph Explorer
           </a>
         </div>,
         {
