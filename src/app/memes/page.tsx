@@ -431,22 +431,16 @@ export default function Memes() {
                         key={key}
                         onClick={async () => {
                           if (tab === "GIFs" || tab === "Background") {
-                            return await handleAddGif(
-                              "http://localhost:1337" + trait.image[0].url
-                            );
+                            return await handleAddGif(trait.image.url);
                           } else if (tab === "Stickers") {
-                            return await handleAddStikcer(
-                              "http://localhost:1337" + trait.image[0].url
-                            );
+                            return await handleAddStikcer(trait.image.url);
                           } else if (tab === "Text") {
                             return await handleAddText();
                           }
                         }}
                         className={`border border-gray-500 w-24 h-24 rounded-lg cursor-pointer`}
                       >
-                        <ImageThumbnail
-                          src={`http://localhost:1337${trait.image[0].url}`}
-                        />
+                        <ImageThumbnail src={`${trait.image.url}`} />
                       </div>
                     ))}
               </div>

@@ -42,8 +42,6 @@ export default function MorphysList() {
       console.log(metadata);
       setNfts((prev) => [...prev, metadata]);
     }
-
-    // console.log(supply);
   }, [address]);
 
   useEffect(() => {

@@ -58,6 +58,6 @@ export interface Meme {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
-  image: Image[];
+  image: Image;
 }
 
