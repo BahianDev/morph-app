@@ -1,7 +1,5 @@
 "use client";
-import { ConnectWallet } from "@/components/ConnectWallet";
 import Navbar from "@/components/Navbar";
-import Link from "next/link";
 
 export default function MorphysLayout({
   children,
