@@ -162,7 +162,6 @@ export default function Memes() {
         await img.setSrc(images[j], loadImageOptions);
 
         canvas.add(img);
-        canvas.setActiveObject(img);
 
         canvasImages.push(img);
       }
@@ -260,7 +259,7 @@ export default function Memes() {
 
     const el = document.createElement("a");
     el.href = URL.createObjectURL(base64ToBlob(imageGenerated));
-    el.download = "headphone.gif";
+    el.download = "generated.gif";
     el.style.display = "none";
     document.body.appendChild(el);
     el.click();
@@ -400,7 +399,7 @@ export default function Memes() {
 
   const handleAddText = useCallback(() => {
     const text = new Textbox("Insert Here");
-    applyCustomControlsToObject(text);
+    // applyCustomControlsToObject(text);
 
     canvas.add(text);
   }, [canvas]);
