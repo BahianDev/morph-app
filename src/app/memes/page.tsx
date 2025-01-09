@@ -4,7 +4,7 @@ import ImageThumbnail from "@/config/ImageThumbnail";
 import { api } from "@/services/api";
 import { Meme } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { Canvas, Control, FabricImage, FabricObject, Textbox } from "fabric";
+import { Canvas, FabricImage, Textbox } from "fabric";
 import { useCallback, useEffect, useRef, useState } from "react";
 import SuperGif from "libgif";
 import { loadedImg } from "@/config/loadedImg";
