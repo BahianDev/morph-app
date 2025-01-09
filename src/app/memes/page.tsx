@@ -64,6 +64,27 @@ export default function Memes() {
     [canvas]
   );
 
+  useHotkeys(
+    "clear",
+    (e) => {
+      e.preventDefault();
+      handleDeleteActiveObject();
+    },
+    { enabled: true },
+    [canvas]
+  );
+
+
+  useHotkeys(
+    "del",
+    (e) => {
+      e.preventDefault();
+      handleDeleteActiveObject();
+    },
+    { enabled: true },
+    [canvas]
+  );
+
   const applyCustomControlsToObject = (object: FabricObject) => {
     object.controls.deleteControl = new Control({
       x: 0.5,
