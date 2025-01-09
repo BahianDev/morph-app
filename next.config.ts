@@ -5,8 +5,12 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
+        protocol: 'https',
+        hostname: 'better-festival-3bb25677f9.strapiapp.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'better-festival-3bb25677f9.media.strapiapp.com',
       },
       {
         protocol: 'https',

@@ -22,7 +22,7 @@ export default function Morphys() {
     {
       name: "base",
       type: "Base",
-      url: "http://localhost:1337/uploads/base_d6563af965.png",
+      url: `https://better-festival-3bb25677f9.media.strapiapp.com/base_dc41f5cb08.png`,
     },
   ]);
 
@@ -79,7 +79,7 @@ export default function Morphys() {
       {
         name: "base",
         type: "Base",
-        url: "http://localhost:1337/uploads/base_d6563af965.png",
+        url: `https://better-festival-3bb25677f9.media.strapiapp.com/base_dc41f5cb08.png`,
       },
     ]);
   }, []);
@@ -197,7 +197,7 @@ export default function Morphys() {
               {mountedImage.map((image, key) => (
                 <Image
                   key={key}
-                  className="absolute top-0 left-0"
+                  className="absolute top-2 left-0"
                   src={image.url}
                   width={500}
                   height={500}
@@ -231,7 +231,7 @@ export default function Morphys() {
                         onClick={() =>
                           addTraitImage(
                             trait.type,
-                            "http://localhost:1337" + trait.image[0].url,
+                            trait.image[0].url,
                             trait.name
                           )
                         }
@@ -242,7 +242,7 @@ export default function Morphys() {
                         }`}
                       >
                         <Image
-                          src={`http://localhost:1337${trait.image[0].url}`}
+                          src={`${trait.image[0].url}`}
                           alt="Picture of the author"
                           className="h-full w-full rounded-lg"
                           width={80}
