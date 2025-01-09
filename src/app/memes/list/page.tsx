@@ -23,18 +23,12 @@ export default function MemesList() {
     }).then((r) => Number(r));
 
     for (let index = 0; index < supply; index++) {
-      const token = await readContract(config, {
-        abi,
-        address: "0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff",
-        functionName: "tokenOfOwnerByIndex",
-        args: [address, index],
-      }).then((r) => Number(r));
 
       const uri = await readContract(config, {
         abi,
         address: "0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff",
         functionName: "tokenURI",
-        args: [token],
+        args: [index + 1],
       }).then((r) => String(r));
 
       const { data: metadata } = await axios.get(uri);

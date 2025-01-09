@@ -11,11 +11,11 @@ const navLinks = [
   },
   {
     title: "Morphys",
-    path: "/morphys",
+    path: "/morphys/list",
   },
   {
     title: "Memes",
-    path: "/memes",
+    path: "/memes/list",
   },
 ];
 

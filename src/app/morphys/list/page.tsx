@@ -23,18 +23,12 @@ export default function MorphysList() {
     }).then((r) => Number(r));
 
     for (let index = 0; index < supply; index++) {
-      const token = await readContract(config, {
-        abi,
-        address: "0x094cd54bCC5eeC67c999a6E32C3dE2584726D918",
-        functionName: "tokenOfOwnerByIndex",
-        args: [address, index],
-      }).then((r) => Number(r));
 
       const uri = await readContract(config, {
         abi,
         address: "0x094cd54bCC5eeC67c999a6E32C3dE2584726D918",
         functionName: "tokenURI",
-        args: [token],
+        args: [index + 1],
       }).then((r) => String(r));
 
       const { data: metadata } = await axios.get(uri);
