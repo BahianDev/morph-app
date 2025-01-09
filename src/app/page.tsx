@@ -11,6 +11,7 @@ export default function Landing() {
         <div className="flex gap-3">
           <Image
             src="/landing/1.png"
+            className="hidden lg:flex"
             width={300}
             height={400}
             alt="1"
@@ -22,6 +23,7 @@ export default function Landing() {
           />
           <Image
             src="/landing/2.png"
+            className="hidden lg:flex"
             width={300}
             height={400}
             alt="2"
@@ -44,6 +46,7 @@ export default function Landing() {
           />
           <Image
             src="/landing/4.png"
+            className="hidden lg:flex"
             width={300}
             height={400}
             alt="3"
