@@ -393,7 +393,7 @@ export default function Memes() {
   });
 
   return (
-    <div className="flex flex-col items-center justify-items-center min-h-screen py-8">
+    <div className="flex flex-col items-center justify-items-center min-h-screen py-8 px-4">
       <main className="flex flex-col gap-8 items-start justify-start w-full">
         <span className="font-medium text-2xl self-start">
           Morph your Morphy, download or mint on-chain to rep on socials.
@@ -453,7 +453,7 @@ export default function Memes() {
             </div>
           </div>
         </div>
-        <div>
+        <div className="lg:ml-5">
           <button
             onClick={handleClear}
             className="focus:outline-none text-black border-2 border-black bg-transparent font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"

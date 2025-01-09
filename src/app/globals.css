@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .clip-nav-path {
+    clip-path: circle(100px at 50% -20%);
+  }
+  .clip-nav-path-active {
+    clip-path: circle(1500px at 90% -15%);
+  }
+
+  .nav-list-sm {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #14A800;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-direction: column;
+    padding-left: 1rem /* 16px */;
+    padding-right: 1rem /* 16px */;
+    transition-duration: 700ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+}
+
 :root {
   --background: #f3f7f2;
   --foreground: #000000;
