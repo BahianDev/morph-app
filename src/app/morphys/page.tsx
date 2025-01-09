@@ -173,7 +173,7 @@ export default function Morphys() {
           target="_blank"
           href={`https://explorer-holesky.morphl2.io/token/0x094cd54bCC5eeC67c999a6E32C3dE2584726D918/instance/${tokenId}`}
         >
-          Click to see Morhp Explorer
+          Click to see Morph Explorer
         </a>
       </div>,
       {
@@ -193,7 +193,7 @@ export default function Morphys() {
         </span>
         <div className="flex space-x-5 flex-col lg:flex-row w-full">
           <div className="flex flex-col lg:flex-row w-full gap-5">
-            <div className="bg-custom-gray p-4 rounded-xl relative w-60 h-60  lg:w-96 lg:h-96">
+            <div className="bg-custom-gray p-4 rounded-xl relative w-60 h-60 lg:w-[500px] lg:h-[500px]">
               {mountedImage.map((image, key) => (
                 <Image
                   key={key}

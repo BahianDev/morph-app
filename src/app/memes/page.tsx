@@ -15,6 +15,7 @@ import { createGIF } from "@/util/createGIF";
 import { base64ToBlob } from "@/util/base64ToBlob";
 import abi from "@/contracts/Memes.abi.json";
 import axios from "axios";
+import { useHotkeys } from "react-hotkeys-hook";
 import {
   readContract,
   waitForTransactionReceipt,
@@ -52,6 +53,16 @@ export default function Memes() {
       canvas.renderAll();
     }
   }, [canvas]);
+
+  useHotkeys(
+    "backspace",
+    (e) => {
+      e.preventDefault();
+      handleDeleteActiveObject();
+    },
+    { enabled: true },
+    [canvas]
+  );
 
   const applyCustomControlsToObject = (object: FabricObject) => {
     object.controls.deleteControl = new Control({
@@ -171,7 +182,8 @@ export default function Memes() {
       oImg.borderColor = "#14A800";
       oImg.borderScaleFactor = 2;
       oImg.cornerColor = "#14A800";
-      applyCustomControlsToObject(oImg);
+      oImg.objectCaching = false;
+      // applyCustomControlsToObject(oImg);
       canvas.add(oImg);
       canvas.setActiveObject(oImg);
     });
