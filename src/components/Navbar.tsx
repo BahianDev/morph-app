@@ -29,7 +29,8 @@ const Navbar = () => {
   return (
     <header className="flex w-full sticky min-h-16 items-center h-auto bg-nav_bg max-sm:px-4 backdrop-blur-md z-[100] top-0">
       <nav className="w-full justify-between flex mr-auto ml-auto h-full">
-        <h1 className="font-extrabold text-4xl">MORPH’D</h1>
+
+        <Link href={'/home'} className="font-extrabold text-4xl cursor-pointer">MORPH’D</Link>
         <button
           onClick={handleToogle}
           className={`block z-10 md:hidden h-6 mt-2 border-black bg-none border-t-4 cursor-pointer before:content-[' '] before:block before:w-[30px] before:h-1 before:bg-black before:mt-[5px] before:relative before:duration-700 after:content-[' '] after:block after:w-[30px] after:h-1 after:bg-black after:mt-[5px] after:relative after:duration-700 ${
