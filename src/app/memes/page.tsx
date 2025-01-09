@@ -9,8 +9,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import SuperGif from "libgif";
 import { loadedImg } from "@/config/loadedImg";
 import { canvasToFile } from "@/util/canvasToFile";
-import { deleteIcon } from "@/util/deleteIcon";
-import { renderIcon } from "@/util/renderIcon";
+// import { deleteIcon } from "@/util/deleteIcon";
+// import { renderIcon } from "@/util/renderIcon";
 import { createGIF } from "@/util/createGIF";
 import { base64ToBlob } from "@/util/base64ToBlob";
 import abi from "@/contracts/Memes.abi.json";
@@ -85,17 +85,17 @@ export default function Memes() {
     [canvas]
   );
 
-  const applyCustomControlsToObject = (object: FabricObject) => {
-    object.controls.deleteControl = new Control({
-      x: 0.5,
-      y: -0.5,
-      offsetY: -15,
-      offsetX: 20,
-      cursorStyle: "pointer",
-      render: (ctx, left, top) => renderIcon(ctx, left, top, deleteIcon),
-      mouseUpHandler: handleDeleteActiveObject,
-    });
-  };
+  // const applyCustomControlsToObject = (object: FabricObject) => {
+  //   object.controls.deleteControl = new Control({
+  //     x: 0.5,
+  //     y: -0.5,
+  //     offsetY: -15,
+  //     offsetX: 20,
+  //     cursorStyle: "pointer",
+  //     render: (ctx, left, top) => renderIcon(ctx, left, top, deleteIcon),
+  //     mouseUpHandler: handleDeleteActiveObject,
+  //   });
+  // };
 
   useEffect(() => {
     if (canvasRef.current) {
