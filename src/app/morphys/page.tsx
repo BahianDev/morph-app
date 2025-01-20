@@ -37,7 +37,6 @@ export default function Morphys() {
     "Footwear",
     "Accessories",
     "Mouth",
-
   ];
 
   const { data: traits } = useQuery({
@@ -54,9 +53,9 @@ export default function Morphys() {
     (type: string, url: string, name: string) => {
       setMountedImage((prev) => {
         const existingIndex = prev.findIndex((item) => item.type === type);
-  
+
         let updated;
-  
+
         // Substitui ou adiciona a camada com base no tipo
         if (existingIndex !== -1) {
           updated = [...prev];
@@ -64,7 +63,7 @@ export default function Morphys() {
         } else {
           updated = [...prev, { type, url, name }];
         }
-  
+
         // Ordena as camadas com base no array sections
         return updated.sort((a, b) => {
           return sections.indexOf(a.type) - sections.indexOf(b.type);
@@ -127,7 +126,7 @@ export default function Morphys() {
         };
       });
 
-    const response = await axios.post(
+    await axios.post(
       "/api",
       {
         height: 2048,
@@ -205,19 +204,21 @@ export default function Morphys() {
             </div>
             <div className="bg-custom-gray rounded-xl h-full lg:flex-1">
               <div className="flex overflow-x-scroll gap-8 items-center justify-center px-4 bg-tamber-gray h-16 w-full rounded-t-xl">
-                {sections.filter(section => section !== 'Base').map((section, key) => (
-                  <div
-                    onClick={() => setTab(section)}
-                    key={key}
-                    className={`${
-                      tab === section
-                        ? "text-white border-b-4 border-solid transition-all duration-300 "
-                        : ""
-                    } h-full flex items-center cursor-pointer`}
-                  >
-                    <span className="font-bold">{section}</span>
-                  </div>
-                ))}
+                {sections
+                  .filter((section) => section !== "Base")
+                  .map((section, key) => (
+                    <div
+                      onClick={() => setTab(section)}
+                      key={key}
+                      className={`${
+                        tab === section
+                          ? "text-white border-b-4 border-solid transition-all duration-300 "
+                          : ""
+                      } h-full flex items-center cursor-pointer`}
+                    >
+                      <span className="font-bold">{section}</span>
+                    </div>
+                  ))}
               </div>
               <div className="px-4 py-8 flex gap-8 flex-wrap">
                 {traits.length > 0 &&
