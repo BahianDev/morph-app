@@ -28,14 +28,16 @@ export default function Morphys() {
 
   const sections = [
     "Background",
+    "Base",
     "Lower",
     "Hat",
     "Upper",
     "Eyes",
-    "Eyes Wear",
+    "Eyewear",
     "Foot Wear",
     "Accessories",
     "Mouth",
+
   ];
 
   const { data: traits } = useQuery({
@@ -52,26 +54,24 @@ export default function Morphys() {
     (type: string, url: string, name: string) => {
       setMountedImage((prev) => {
         const existingIndex = prev.findIndex((item) => item.type === type);
-
+  
         let updated;
-
+  
+        // Substitui ou adiciona a camada com base no tipo
         if (existingIndex !== -1) {
           updated = [...prev];
           updated[existingIndex] = { type, url, name };
         } else {
           updated = [...prev, { type, url, name }];
         }
-
+  
+        // Ordena as camadas com base no array sections
         return updated.sort((a, b) => {
-          if (a.type === "Background") return -1;
-          if (b.type === "Background") return 1;
-          if (a.type === "Base") return -1;
-          if (b.type === "Base") return 1;
-          return 0;
+          return sections.indexOf(a.type) - sections.indexOf(b.type);
         });
       });
     },
-    []
+    [sections]
   );
 
   const resetTraitImage = useCallback(() => {
@@ -139,8 +139,6 @@ export default function Morphys() {
       { responseType: "arraybuffer" }
     );
 
-    console.log(response.data);
-
     toast.dismiss();
 
     toast.loading("Sending transaction...");
@@ -188,8 +186,8 @@ export default function Morphys() {
     <div className="flex flex-col items-center justify-items-center min-h-screen py-8 px-4">
       <main className="flex flex-col gap-8 items-start justify-start w-full">
         <span className="font-medium text-2xl self-start">
-          Morph your Morphy, download or mint on-chain to rep on socials.
-          Simple!
+          Morph your Morphy avatar! Download or mint on-chain and rep Morph on
+          socials - simple!
         </span>
         <div className="flex space-x-5 flex-col lg:flex-row w-full">
           <div className="flex flex-col lg:flex-row w-full gap-5">
@@ -207,7 +205,7 @@ export default function Morphys() {
             </div>
             <div className="bg-custom-gray rounded-xl h-full lg:flex-1">
               <div className="flex overflow-x-scroll gap-8 items-center px-4 bg-tamber-gray h-16 w-full rounded-t-xl">
-                {sections.map((section, key) => (
+                {sections.filter(section => section !== 'Base').map((section, key) => (
                   <div
                     onClick={() => setTab(section)}
                     key={key}
