@@ -15,6 +15,7 @@ import { createGIF } from "@/util/createGIF";
 import { base64ToBlob } from "@/util/base64ToBlob";
 import abi from "@/contracts/Memes.abi.json";
 import axios from "axios";
+import { TbArrowForwardUp, TbArrowBack } from "react-icons/tb";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   readContract,
@@ -74,7 +75,6 @@ export default function Memes() {
     [canvas]
   );
 
-
   useHotkeys(
     "del",
     (e) => {
@@ -104,6 +104,7 @@ export default function Memes() {
         height: 500,
         selectionBorderColor: "#14A800",
         selectionColor: "#14A800",
+        preserveObjectStacking: true,
       });
 
       initCanvas.backgroundColor = "transparent";
@@ -399,7 +400,6 @@ export default function Memes() {
 
   const handleAddText = useCallback(() => {
     const text = new Textbox("Insert Here");
-    // applyCustomControlsToObject(text);
 
     canvas.add(text);
   }, [canvas]);
@@ -412,6 +412,25 @@ export default function Memes() {
     initialData: [],
   });
 
+  const handleBringToFront = useCallback(() => {
+    const activeObject = canvas?.getActiveObject();
+
+    if (activeObject) {
+      canvas.bringObjectForward(activeObject, true);
+      canvas.renderAll();
+    }
+  }, [canvas]);
+
+  const handleBringToBackward = useCallback(() => {
+    const activeObject = canvas?.getActiveObject();
+
+    if (activeObject) {
+      canvas.sendObjectToBack(activeObject, true);
+      canvas.renderAll();
+    }
+  }, [canvas]);
+
+
   return (
     <div className="flex flex-col items-center justify-items-center min-h-screen py-8 px-4">
       <main className="flex flex-col gap-8 items-start justify-start w-full">
@@ -422,7 +441,15 @@ export default function Memes() {
         <div className="flex space-x-5 flex-col lg:flex-row w-full">
           <div className="flex flex-col lg:flex-row w-full gap-5">
             <div className="bg-custom-gray rounded-xl relative w-full h-96 lg:w-[500px] lg:h-[500px]">
-              <div className="canvas_w">
+              <div className="canvas_w relative">
+                <div className="bg-primary flex flex-col items-center justify-center gap-2 absolute w-12 h-28 z-50 right-2 top-2 rounded-lg ">
+                  <button className="bg-custom-gray w-10 h-10 rotate-90 rounded-lg">
+                    <TbArrowForwardUp onClick={handleBringToBackward} className="text-4xl"  />
+                  </button>
+                  <button onClick={handleBringToFront} className="bg-custom-gray w-10 h-10 rotate-90 rounded-lg">
+                    <TbArrowBack className="text-4xl" />
+                  </button>
+                </div>
                 <canvas ref={canvasRef} className="absolute inset-0 flex-1" />
               </div>
             </div>
@@ -468,6 +495,12 @@ export default function Memes() {
           </div>
         </div>
         <div className="lg:ml-5">
+          <button
+            onClick={handleBringToFront}
+            className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
+          >
+            Bring to Front
+          </button>
           <button
             onClick={handleClear}
             className="focus:outline-none text-black border-2 border-black bg-transparent font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
