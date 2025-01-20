@@ -25,6 +25,40 @@ import {
 import { config } from "../wagmi";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import toast from "react-hot-toast";
+import {
+  Anton,
+  Bebas_Neue,
+  Lobster,
+  Poppins,
+  Raleway,
+  Rubik,
+  Monoton,
+  Pacifico,
+  Oswald,
+} from "next/font/google";
+import { NextFont } from "next/dist/compiled/@next/font";
+
+const anton = Anton({ subsets: ["latin"], weight: ["400"] });
+const bebas_Neue = Bebas_Neue({ subsets: ["latin"], weight: ["400"] });
+const lobster = Lobster({ subsets: ["latin"], weight: ["400"] });
+const poppins = Poppins({ subsets: ["latin"], weight: ["400"] });
+const raleway = Raleway({ subsets: ["latin"], weight: ["400"] });
+const rubik = Rubik({ subsets: ["latin"], weight: ["400"] });
+const monoton = Monoton({ subsets: ["latin"], weight: ["400"] });
+const pacifico = Pacifico({ subsets: ["latin"], weight: ["400"] });
+const oswald = Oswald({ subsets: ["latin"], weight: ["400"] });
+
+const fonts = [
+  anton,
+  bebas_Neue,
+  lobster,
+  poppins,
+  raleway,
+  rubik,
+  monoton,
+  pacifico,
+  oswald,
+];
 
 export default function Memes() {
   const canvasRef = useRef<any>(null);
@@ -398,11 +432,15 @@ export default function Memes() {
     canvas?.clear();
   }, [canvas]);
 
-  const handleAddText = useCallback(() => {
-    const text = new Textbox("Insert Here");
-
-    canvas.add(text);
-  }, [canvas]);
+  const handleAddText = useCallback(
+    (font: NextFont) => {
+      const text = new Textbox("Insert Here", {
+        fontFamily: font.style.fontFamily,
+      });
+      canvas.add(text);
+    },
+    [canvas]
+  );
 
   const { data: memes } = useQuery({
     queryKey: ["memes-list"],
@@ -430,7 +468,6 @@ export default function Memes() {
     }
   }, [canvas]);
 
-
   return (
     <div className="flex flex-col items-center justify-items-center min-h-screen py-8 px-4">
       <main className="flex flex-col gap-8 items-start justify-start w-full">
@@ -444,9 +481,15 @@ export default function Memes() {
               <div className="canvas_w relative">
                 <div className="bg-primary flex flex-col items-center justify-center gap-2 absolute w-12 h-28 z-50 right-2 top-2 rounded-lg ">
                   <button className="bg-custom-gray w-10 h-10 rotate-90 rounded-lg">
-                    <TbArrowForwardUp onClick={handleBringToBackward} className="text-4xl"  />
+                    <TbArrowForwardUp
+                      onClick={handleBringToBackward}
+                      className="text-4xl"
+                    />
                   </button>
-                  <button onClick={handleBringToFront} className="bg-custom-gray w-10 h-10 rotate-90 rounded-lg">
+                  <button
+                    onClick={handleBringToFront}
+                    className="bg-custom-gray w-10 h-10 rotate-90 rounded-lg"
+                  >
                     <TbArrowBack className="text-4xl" />
                   </button>
                 </div>
@@ -481,8 +524,6 @@ export default function Memes() {
                             return await handleAddGif(trait.image.url);
                           } else if (tab === "Stickers") {
                             return await handleAddStikcer(trait.image.url);
-                          } else if (tab === "Text") {
-                            return await handleAddText();
                           }
                         }}
                         className={`border border-gray-500 w-24 h-24 rounded-lg cursor-pointer`}
@@ -490,17 +531,21 @@ export default function Memes() {
                         <ImageThumbnail src={`${trait.image.url}`} />
                       </div>
                     ))}
+                {tab === "Text" &&
+                  fonts.map((font, key) => (
+                    <div
+                      key={key}
+                      onClick={() => handleAddText(font)}
+                      className={`text-8xl w-24 h-24 cursor-pointer ${font.className}`}
+                    >
+                      A
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
         </div>
         <div className="lg:ml-5">
-          <button
-            onClick={handleBringToFront}
-            className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
-          >
-            Bring to Front
-          </button>
           <button
             onClick={handleClear}
             className="focus:outline-none text-black border-2 border-black bg-transparent font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
