@@ -34,7 +34,7 @@ export default function Morphys() {
     "Upper",
     "Eyes",
     "Eyewear",
-    "Foot Wear",
+    "Footwear",
     "Accessories",
     "Mouth",
 
@@ -204,7 +204,7 @@ export default function Morphys() {
               ))}
             </div>
             <div className="bg-custom-gray rounded-xl h-full lg:flex-1">
-              <div className="flex overflow-x-scroll gap-8 items-center px-4 bg-tamber-gray h-16 w-full rounded-t-xl">
+              <div className="flex overflow-x-scroll gap-8 items-center justify-center px-4 bg-tamber-gray h-16 w-full rounded-t-xl">
                 {sections.filter(section => section !== 'Base').map((section, key) => (
                   <div
                     onClick={() => setTab(section)}
