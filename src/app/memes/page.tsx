@@ -234,9 +234,9 @@ export default function Memes() {
       const oImg = img;
       oImg.set({ left: 20, top: 20 });
       oImg.scale(0.1);
-      oImg.borderColor = "#14A800";
+      oImg.borderColor = "#FFFFFF";
       oImg.borderScaleFactor = 2;
-      oImg.cornerColor = "#14A800";
+      oImg.cornerColor = "#FFFFFF";
       oImg.objectCaching = false;
       // applyCustomControlsToObject(oImg);
       canvas.add(oImg);
