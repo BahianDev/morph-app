@@ -446,7 +446,7 @@ export default function Memes() {
     queryKey: ["memes-list"],
     queryFn: (): Promise<Meme[]> =>
       api
-        .get(`memes?populate=*&pagination[pageSize]=100`)
+        .get(`memes?populate=*&pagination[pageSize]=210`)
         .then((response) => response.data.data),
     refetchOnWindowFocus: false,
     initialData: [],
