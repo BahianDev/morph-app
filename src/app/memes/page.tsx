@@ -3,7 +3,7 @@
 import ImageThumbnail from "@/config/ImageThumbnail";
 import { api } from "@/services/api";
 import { Meme } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Canvas, FabricImage, Textbox } from "fabric";
 import { useCallback, useEffect, useRef, useState } from "react";
 import SuperGif from "libgif";
@@ -59,6 +59,20 @@ const fonts = [
   pacifico,
   oswald,
 ];
+
+interface Pagination {
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
+}
+
+interface MemeResponse {
+  data: any[];
+  meta: {
+    pagination: Pagination;
+  };
+}
 
 export default function Memes() {
   const canvasRef = useRef<any>(null);
@@ -442,15 +456,40 @@ export default function Memes() {
     [canvas]
   );
 
-  const { data: memes } = useQuery({
-    queryKey: ["memes-list"],
-    queryFn: (): Promise<Meme[]> =>
-      api
-        .get(`memes?populate=*&pagination[pageSize]=210`)
-        .then((response) => response.data.data),
-    refetchOnWindowFocus: false,
-    initialData: [],
-  });
+  const fetchProjects = async ({ pageParam }: { pageParam?: number }) => {
+    console.log(pageParam);
+    const res = await fetch(
+      `https://better-festival-3bb25677f9.strapiapp.com/api/memes?populate=*&pagination[page]=${pageParam}&pagination[pageSize]=100`
+    );
+    if (!res.ok) {
+      throw new Error("Erro ao buscar os memes");
+    }
+    const json = await res.json();
+
+    return {
+      data: json.data,
+      pagination: json.meta.pagination,
+    };
+  };
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+    useInfiniteQuery({
+      queryKey: ["memes"],
+      queryFn: fetchProjects,
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        const { page, pageCount } = lastPage.pagination;
+        // Se a página atual for menor que o total, retorna a próxima página
+        return page < pageCount ? page + 1 : undefined;
+      },
+    });
+
+  useEffect(() => {
+    // Se a aba estiver ativa e houver próxima página e não estiver no processo de buscar uma nova página...
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleBringToFront = useCallback(() => {
     const activeObject = canvas?.getActiveObject();
@@ -469,6 +508,8 @@ export default function Memes() {
       canvas.renderAll();
     }
   }, [canvas]);
+
+  const allMemes = data?.pages.flatMap((page) => page.data) || [];
 
   return (
     <div className="flex flex-col items-center justify-items-center min-h-screen py-8 px-4">
@@ -515,8 +556,9 @@ export default function Memes() {
                 ))}
               </div>
               <div className="px-4 py-8 flex gap-8 flex-wrap">
-                {memes.length > 0 &&
-                  memes
+                {allMemes &&
+                  allMemes.length > 0 &&
+                  allMemes
                     .filter((trait) => trait.type === tab)
                     .map((trait, key) => (
                       <div
