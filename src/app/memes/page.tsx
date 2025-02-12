@@ -1,9 +1,7 @@
 "use client";
 
 import ImageThumbnail from "@/config/ImageThumbnail";
-import { api } from "@/services/api";
-import { Meme } from "@/types";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Canvas, FabricImage, Textbox } from "fabric";
 import { useCallback, useEffect, useRef, useState } from "react";
 import SuperGif from "libgif";
@@ -472,7 +470,7 @@ export default function Memes() {
     };
   };
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["memes"],
       queryFn: fetchProjects,
