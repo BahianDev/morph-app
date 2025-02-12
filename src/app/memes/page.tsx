@@ -58,19 +58,6 @@ const fonts = [
   oswald,
 ];
 
-interface Pagination {
-  page: number;
-  pageSize: number;
-  pageCount: number;
-  total: number;
-}
-
-interface MemeResponse {
-  data: any[];
-  meta: {
-    pagination: Pagination;
-  };
-}
 
 export default function Memes() {
   const canvasRef = useRef<any>(null);
