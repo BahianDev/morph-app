@@ -445,7 +445,9 @@ export default function Memes() {
   const { data: memes } = useQuery({
     queryKey: ["memes-list"],
     queryFn: (): Promise<Meme[]> =>
-      api.get(`memes?populate=*`).then((response) => response.data.data),
+      api
+        .get(`memes?populate=*&pagination[pageSize]=100`)
+        .then((response) => response.data.data),
     refetchOnWindowFocus: false,
     initialData: [],
   });
