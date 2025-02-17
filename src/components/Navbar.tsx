@@ -58,11 +58,14 @@ const Navbar = () => {
         >
           {navLinks.map(({ title, path }, index) => (
             <li key={index}>
-              <Link href={path} className="font-medium text-lg">
+              <Link href={path} className="font-medium text-2xl">
                 {title}
               </Link>
             </li>
           ))}
+          <li className="hidden md:flex">
+            <ConnectWallet />
+          </li>
         </ul>
       </nav>
     </header>
