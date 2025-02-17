@@ -275,7 +275,7 @@ export default function Memes() {
 
   const handleDownload = useCallback(async () => {
     if (gifGroups.length === 0) {
-      const dataURL = canvas.toDataURL({ format: "png" });
+      const dataURL = canvas.toDataURL({ format: "png", multiplier: 8 });
       const blob = base64ToBlob(dataURL);
       const el = document.createElement("a");
       el.href = URL.createObjectURL(blob);
