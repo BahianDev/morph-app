@@ -2,13 +2,11 @@
 
 import ImageThumbnail from "@/config/ImageThumbnail";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Canvas, FabricImage, Textbox } from "fabric";
+import { Canvas, FabricImage, Group, Textbox } from "fabric";
 import { useCallback, useEffect, useRef, useState } from "react";
 import SuperGif from "libgif";
 import { loadedImg } from "@/config/loadedImg";
 import { canvasToFile } from "@/util/canvasToFile";
-// import { deleteIcon } from "@/util/deleteIcon";
-// import { renderIcon } from "@/util/renderIcon";
 import { createGIF } from "@/util/createGIF";
 import { base64ToBlob } from "@/util/base64ToBlob";
 import abi from "@/contracts/Memes.abi.json";
@@ -58,14 +56,15 @@ const fonts = [
   oswald,
 ];
 
-
 export default function Memes() {
+  const containerRef: any = useRef(null);
+
   const canvasRef = useRef<any>(null);
   const sections = ["Background", "Stickers", "GIFs", "Text"];
 
   const [canvas, setCanvas] = useState<any>(null);
-  const [canvasImages, setCanvasImages] = useState<any[]>([]);
   const [gifInterval, setGifInverval] = useState<number>(41);
+  const [gifGroups, setGifGroups] = useState<any[]>([]);
 
   const [tab, setTab] = useState("Background");
 
@@ -78,14 +77,18 @@ export default function Memes() {
 
   const handleDeleteActiveObject = useCallback(() => {
     const activeObject = canvas.getActiveObject();
+    if (!activeObject) return;
 
-    if (activeObject) {
-      if (activeObject instanceof Textbox && activeObject.isEditing) {
-        return;
-      }
-      canvas.remove(activeObject);
-      canvas.renderAll();
+    if (activeObject instanceof Textbox && activeObject.isEditing) {
+      return;
     }
+
+    setGifGroups((prevGroups) =>
+      prevGroups.filter((group) => group !== activeObject)
+    );
+
+    canvas.remove(activeObject);
+    canvas.renderAll();
   }, [canvas]);
 
   useHotkeys(
@@ -118,34 +121,38 @@ export default function Memes() {
     [canvas]
   );
 
-  // const applyCustomControlsToObject = (object: FabricObject) => {
-  //   object.controls.deleteControl = new Control({
-  //     x: 0.5,
-  //     y: -0.5,
-  //     offsetY: -15,
-  //     offsetX: 20,
-  //     cursorStyle: "pointer",
-  //     render: (ctx, left, top) => renderIcon(ctx, left, top, deleteIcon),
-  //     mouseUpHandler: handleDeleteActiveObject,
-  //   });
-  // };
-
   useEffect(() => {
-    if (canvasRef.current) {
+    if (canvasRef.current && containerRef.current) {
+      const containerWidth = containerRef.current.clientWidth;
+      const containerHeight = containerRef.current.clientHeight;
+
       const initCanvas = new Canvas(canvasRef.current, {
-        width: 500,
-        height: 500,
+        width: containerWidth,
+        height: containerHeight,
         selectionBorderColor: "#14A800",
         selectionColor: "#14A800",
         preserveObjectStacking: true,
       });
 
       initCanvas.backgroundColor = "transparent";
-
       initCanvas.renderAll();
       setCanvas(initCanvas);
+
+      // Observador para detectar mudanças no tamanho do contêiner
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const { width, height } = entry.contentRect;
+          initCanvas.setWidth(width);
+          initCanvas.setHeight(height);
+          initCanvas.renderAll();
+        }
+      });
+
+      resizeObserver.observe(containerRef.current);
+
       return () => {
         initCanvas.dispose();
+        resizeObserver.disconnect();
       };
     }
   }, []);
@@ -154,74 +161,81 @@ export default function Memes() {
     const imgEl = document.createElement("img");
     imgEl.setAttribute("rel:animated_src", url);
     imgEl.setAttribute("rel:auto_play", "0");
+
+    // Cria um contêiner oculto para o elemento da imagem
     const div = document.createElement("div");
+    div.style.display = "none";
     div.appendChild(imgEl);
+    document.body.appendChild(div);
 
     const gif = new SuperGif({ gif: imgEl });
     const images: string[] = [];
-    let i: number = 0;
 
+    // Carrega a imagem para obter as dimensões
     const image = new Image();
     image.src = url;
     image.crossOrigin = "anonymous";
     await loadedImg(image);
-
     const { width } = image;
-
-    const scale: number = 500 / width;
-
+    const scale = 500 / width;
     Object.assign(imgOptions, { scaleX: scale, scaleY: scale });
 
-    canvas?.clear();
+    // Opcional: limpar o canvas se desejar substituir outros elementos
+    // (Caso não queira limpar, remova ou comente a linha abaixo)
+    // canvas?.clear();
 
     gif.load(async () => {
+      // Remove o contêiner oculto após o carregamento
+      div.remove();
+
       const interval = gif.get_duration_ms() / gif.get_length();
       setGifInverval(interval);
 
-      for (let i: number = 1; i <= gif.get_length(); i++) {
+      // Extrai cada frame do GIF
+      for (let i = 1; i <= gif.get_length(); i++) {
         gif.move_to(i);
         const file = canvasToFile(gif.get_canvas(), `gif-${i}`);
         images.push(URL.createObjectURL(file));
       }
 
-      const canvasImages: any[] = [];
-
+      const gifFrames: any[] = [];
+      // Cria um objeto do Fabric para cada frame
       for (let j = 0; j < images.length; j++) {
         const imgElement = new Image();
         imgElement.src = images[j];
         imgElement.crossOrigin = "anonymous";
-        const img = new FabricImage(imgElement, imgOptions);
-
+        const img = new FabricImage(imgElement, { ...imgOptions });
         const loadImageOptions = { crossOrigin: "anonymous", ...imgOptions };
         await img.setSrc(images[j], loadImageOptions);
-
-        canvas.add(img);
-
-        canvasImages.push(img);
+        gifFrames.push(img);
       }
-
       images.splice(0);
 
+      // Agrupa os frames para que possam ser movidos e redimensionados juntos
+      const group = new Group(gifFrames, {
+        left: 20,
+        top: 20,
+        selectable: true,
+        borderColor: "#14A800",
+        cornerColor: "#14A800",
+        borderScaleFactor: 2,
+        objectCaching: false,
+      });
+      // Marque o grupo como sendo um grupo de GIF
+      canvas.add(group);
+      canvas.setActiveObject(group);
+      // Adicione este grupo ao array de grupos de GIF
+      setGifGroups((prev) => [...prev, group]);
+
+      // Animação: alterna a visibilidade dos frames dentro do grupo
+      let currentFrame = 0;
       setInterval(() => {
-        if (i >= canvasImages.length) i = 0;
-        const tempCanvasImages = [];
-        for (const index of canvasImages.keys()) {
-          let visible: boolean = false;
-          if (index === i) visible = true;
-          canvasImages[index].setOptions({
-            visible,
-          });
-
-          tempCanvasImages.push(canvasImages[index]);
-        }
-        setCanvasImages(tempCanvasImages);
-        i++;
-
-        try {
-          canvas?.renderAll();
-        } catch (e) {
-          console.log(e);
-        }
+        group.getObjects().forEach((obj, index) => {
+          obj.set("visible", index === currentFrame);
+        });
+        currentFrame = (currentFrame + 1) % group.getObjects().length;
+        group.dirty = true;
+        canvas.renderAll();
       }, interval);
     });
   };
@@ -243,7 +257,38 @@ export default function Memes() {
     });
   };
 
+  const handleAddBackground = async (url: string) => {
+    FabricImage.fromURL(url, {
+      crossOrigin: "anonymous",
+    }).then((img) => {
+      const oImg = img;
+      oImg.set({ left: 20, top: 20 });
+      oImg.scale(0.1);
+      oImg.borderColor = "#14A800";
+      oImg.borderScaleFactor = 2;
+      oImg.cornerColor = "#14A800";
+      oImg.objectCaching = false;
+      canvas.add(oImg);
+      canvas.setActiveObject(oImg);
+    });
+  };
+
   const handleDownload = useCallback(async () => {
+    if (gifGroups.length === 0) {
+      const dataURL = canvas.toDataURL({ format: "png" });
+      const blob = base64ToBlob(dataURL);
+      const el = document.createElement("a");
+      el.href = URL.createObjectURL(blob);
+      el.download = "generated.png";
+      el.style.display = "none";
+      document.body.appendChild(el);
+      el.click();
+      document.body.removeChild(el);
+      return;
+    }
+    // Para exportar como GIF, neste exemplo, usamos o primeiro grupo de GIF
+    const group = gifGroups[0];
+    const frames = group.getObjects();
     let i = 0;
     const dataImages: Array<any> = [];
     let imageGenerated: any;
@@ -251,12 +296,12 @@ export default function Memes() {
     const processFrames = async (): Promise<void> => {
       return new Promise((resolve) => {
         const processFrame = async () => {
-          if (i >= canvasImages.length) {
+          if (i >= frames.length) {
             try {
               const gif = await createGIF(dataImages, {
                 gifWidth: 1080,
-                gifHeight: (1080 * 1080) / 1080,
-                interval: gifInterval / 1 / 1000,
+                gifHeight: 1080,
+                interval: gifInterval / 1000,
                 sampleInterval: 10,
                 progressCallback: (progress: number) => {
                   console.log(progress);
@@ -271,20 +316,18 @@ export default function Memes() {
             return;
           }
 
-          for (const index of canvasImages.keys()) {
-            canvasImages[index].set("visible", index === i);
-          }
+          frames.forEach((frame: any, index: any) => {
+            frame.set("visible", index === i);
+          });
 
           try {
             dataImages.push(canvas.toDataURL());
           } catch (e) {
             console.error("Erro ao capturar o frame:", e);
           }
-
           i++;
           setTimeout(processFrame, 40);
         };
-
         processFrame();
       });
     };
@@ -298,59 +341,64 @@ export default function Memes() {
     document.body.appendChild(el);
     el.click();
     document.body.removeChild(el);
-  }, [canvasImages, canvas, gifInterval]);
+  }, [gifGroups, canvas, gifInterval]);
 
   const handleMorph = useCallback(async () => {
-    let i = 0;
-    const dataImages: Array<any> = [];
     let imageGenerated: any;
 
-    const processFrames = async (): Promise<void> => {
-      return new Promise((resolve) => {
-        const processFrame = async () => {
-          if (i >= canvasImages.length) {
-            try {
-              const gif = await createGIF(dataImages, {
-                gifWidth: 1080,
-                gifHeight: (1080 * 1080) / 1080,
-                interval: gifInterval / 1 / 1000,
-                sampleInterval: 10,
-                progressCallback: (progress: number) => {
-                  console.log(progress);
-                },
-              });
-              imageGenerated = gif;
-              dataImages.length = 0;
-            } catch (e) {
-              console.error("Erro ao criar o GIF:", e);
+    // Se não existir nenhum grupo de GIF, exporta como PNG
+    if (gifGroups.length === 0) {
+      const dataURL = canvas.toDataURL({ format: "png" });
+      imageGenerated = dataURL;
+    } else {
+      // Caso exista um grupo de GIF, usa o primeiro grupo para gerar o GIF
+      const group = gifGroups[0];
+      const frames = group.getObjects();
+      let i = 0;
+      const dataImages: Array<any> = [];
+
+      const processFrames = async (): Promise<void> => {
+        return new Promise((resolve) => {
+          const processFrame = async () => {
+            if (i >= frames.length) {
+              try {
+                const gif = await createGIF(dataImages, {
+                  gifWidth: 1080,
+                  gifHeight: 1080,
+                  interval: gifInterval / 1000,
+                  sampleInterval: 10,
+                  progressCallback: (progress: number) => {
+                    console.log(progress);
+                  },
+                });
+                imageGenerated = gif;
+                dataImages.length = 0;
+              } catch (e) {
+                console.error("Erro ao criar o GIF:", e);
+              }
+              resolve();
+              return;
             }
-            resolve();
-            return;
-          }
 
-          for (const index of canvasImages.keys()) {
-            canvasImages[index].set("visible", index === i);
-          }
+            // Define a visibilidade de cada frame de acordo com o frame atual
+            frames.forEach((frame: any, index: any) => {
+              frame.set("visible", index === i);
+            });
 
-          try {
-            dataImages.push(canvas.toDataURL());
-          } catch (e) {
-            console.error("Erro ao capturar o frame:", e);
-          }
+            try {
+              dataImages.push(canvas.toDataURL());
+            } catch (e) {
+              console.error("Erro ao capturar o frame:", e);
+            }
+            i++;
+            setTimeout(processFrame, 40);
+          };
+          processFrame();
+        });
+      };
 
-          i++;
-          setTimeout(processFrame, 40);
-        };
-
-        processFrame();
-      });
-    };
-
-    toast.loading("Generating image...");
-
-    await processFrames();
-
-    toast.dismiss();
+      await processFrames();
+    }
 
     try {
       toast.loading("Uploading metadata...");
@@ -422,13 +470,15 @@ export default function Memes() {
         console.error("Erro inesperado:", error);
       }
     }
-  }, [canvasImages, canvas, gifInterval]);
+  }, [gifGroups, canvas, gifInterval]);
 
   const handleClear = useCallback(() => {
     canvas?.getObjects().forEach((obj: any) => {
       if (obj.type === "textbox") clearInterval(obj?.animateInterval);
     });
+
     canvas?.clear();
+    setGifGroups([]);
   }, [canvas]);
 
   const handleAddText = useCallback(
@@ -442,7 +492,6 @@ export default function Memes() {
   );
 
   const fetchProjects = async ({ pageParam }: { pageParam?: number }) => {
-    console.log(pageParam);
     const res = await fetch(
       `https://better-festival-3bb25677f9.strapiapp.com/api/memes?populate=*&pagination[page]=${pageParam}&pagination[pageSize]=100`
     );
@@ -505,26 +554,31 @@ export default function Memes() {
         </span>
         <div className="flex space-x-5 flex-col lg:flex-row w-full">
           <div className="flex flex-col lg:flex-row w-full gap-5">
-            <div className="bg-custom-gray rounded-xl relative w-full h-96 lg:w-[500px] lg:h-[500px]">
+            {/* Contêiner responsivo com ref para detectar alterações de tamanho */}
+            <div
+              ref={containerRef}
+              className="bg-custom-gray rounded-xl relative w-full h-96 lg:w-[500px] lg:h-[500px]"
+            >
               <div className="canvas_w relative">
-                <div className="bg-primary flex flex-col items-center justify-center gap-2 absolute w-12 h-28 z-50 right-2 top-2 rounded-lg ">
-                  <button className="bg-custom-gray w-10 h-10 rotate-90 rounded-lg">
-                    <TbArrowForwardUp
-                      onClick={handleBringToBackward}
-                      className="text-4xl"
-                    />
-                  </button>
-                  <button
-                    onClick={handleBringToFront}
-                    className="bg-custom-gray w-10 h-10 rotate-90 rounded-lg"
-                  >
-                    <TbArrowBack className="text-4xl" />
-                  </button>
-                </div>
                 <canvas ref={canvasRef} className="absolute inset-0 flex-1" />
               </div>
+              {/* Botões de bring to front/back */}
+              <div className="bg-primary flex flex-col items-center justify-center gap-2 absolute w-12 h-28 z-50 right-2 top-2 rounded-lg ">
+                <button className="bg-custom-gray w-10 h-10 rotate-90 rounded-lg">
+                  <TbArrowForwardUp
+                    onClick={handleBringToBackward}
+                    className="text-4xl text-black"
+                  />
+                </button>
+                <button
+                  onClick={handleBringToFront}
+                  className="bg-custom-gray w-10 h-10 rotate-90 rounded-lg"
+                >
+                  <TbArrowBack className="text-4xl text-black" />
+                </button>
+              </div>
             </div>
-            <div className="bg-custom-gray rounded-xl h-full lg:flex-1">
+            <div className="bg-custom-gray rounded-xl h-full lg:flex-1 ">
               <div className="flex overflow-x-scroll gap-8 items-center px-4 bg-tamber-gray h-16 w-full rounded-t-xl">
                 {sections.map((section, key) => (
                   <div
@@ -532,15 +586,15 @@ export default function Memes() {
                     key={key}
                     className={`${
                       tab === section
-                        ? "text-white border-b-4 border-solid transition-all duration-300 "
-                        : ""
+                        ? "text-white border-b-4 border-solid transition-all duration-300"
+                        : "text-black"
                     } h-full flex items-center cursor-pointer`}
                   >
                     <span className="font-bold">{section}</span>
                   </div>
                 ))}
               </div>
-              <div className="px-4 py-8 flex gap-8 flex-wrap">
+              <div className="px-4 py-8 flex gap-8 flex-wrap overflow-scroll max-h-[400px]">
                 {allMemes &&
                   allMemes.length > 0 &&
                   allMemes
@@ -549,13 +603,15 @@ export default function Memes() {
                       <div
                         key={key}
                         onClick={async () => {
-                          if (tab === "GIFs" || tab === "Background") {
+                          if (tab === "GIFs") {
                             return await handleAddGif(trait.image.url);
                           } else if (tab === "Stickers") {
                             return await handleAddStikcer(trait.image.url);
+                          } else if (tab === "Background") {
+                            return await handleAddBackground(trait.image.url);
                           }
                         }}
-                        className={`border border-gray-500 w-24 h-24 rounded-lg cursor-pointer`}
+                        className="border border-gray-500 w-24 h-24 rounded-lg cursor-pointer"
                       >
                         <ImageThumbnail src={`${trait.image.url}`} />
                       </div>
@@ -565,7 +621,7 @@ export default function Memes() {
                     <div
                       key={key}
                       onClick={() => handleAddText(font)}
-                      className={`text-8xl w-24 h-24 cursor-pointer ${font.className}`}
+                      className={`text-black text-8xl w-24 h-24 cursor-pointer ${font.className}`}
                     >
                       A
                     </div>
