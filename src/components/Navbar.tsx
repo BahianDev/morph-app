@@ -40,7 +40,7 @@ const Navbar = () => {
           MORPH’D
         </Link>
 
-        <div className="fixed md:hidden right-12">
+        <div className="fixed md:hidden right-12 top-3">
           <ConnectWallet />
         </div>
 
