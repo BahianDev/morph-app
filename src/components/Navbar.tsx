@@ -31,7 +31,7 @@ const Navbar = () => {
       <nav
         className={`w-full ${
           isOpen ? "justify-start" : "justify-between"
-        }  items-start flex mr-auto ml-auto h-full`}
+        }  items-start flex mr-auto ml-auto h-full relative`}
       >
         <Link
           href={"/home"}
