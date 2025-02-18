@@ -13,6 +13,7 @@ import abi from "@/contracts/Memes.abi.json";
 import axios from "axios";
 import { TbArrowForwardUp, TbArrowBack } from "react-icons/tb";
 import { useHotkeys } from "react-hotkeys-hook";
+import { IoMdColorPalette } from "react-icons/io";
 import {
   readContract,
   waitForTransactionReceipt,
@@ -58,9 +59,12 @@ const fonts = [
 
 export default function Memes() {
   const containerRef: any = useRef(null);
+  const colorInputRef = useRef<HTMLInputElement>(null);
 
   const canvasRef = useRef<any>(null);
   const sections = ["Background", "Stickers", "GIFs", "Text"];
+
+  const [textColor, setTextColor] = useState("#000000");
 
   const [canvas, setCanvas] = useState<any>(null);
   const [gifInterval, setGifInverval] = useState<number>(41);
@@ -485,11 +489,26 @@ export default function Memes() {
     (font: NextFont) => {
       const text = new Textbox("Insert Here", {
         fontFamily: font.style.fontFamily,
+        fill: textColor,
       });
       canvas.add(text);
     },
-    [canvas]
+    [canvas, textColor]
   );
+
+  const handleTextColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newColor = e.target.value;
+    setTextColor(newColor);
+    const activeObject = canvas?.getActiveObject();
+    if (activeObject && activeObject.type === "textbox") {
+      activeObject.set("fill", newColor);
+      canvas.renderAll();
+    }
+  };
+
+  const handleIconClick = () => {
+    colorInputRef.current?.click();
+  };
 
   const fetchProjects = async ({ pageParam }: { pageParam?: number }) => {
     const res = await fetch(
@@ -579,7 +598,7 @@ export default function Memes() {
               </div>
             </div>
             <div className="bg-custom-gray rounded-xl h-full lg:flex-1 ">
-              <div className="flex overflow-x-scroll gap-8 items-center px-4 bg-tamber-gray h-16 w-full rounded-t-xl">
+              <div className="flex flex-wrap gap-8 items-center px-4 bg-tamber-gray py-4 md:py-0 md:h-16 w-full rounded-t-xl">
                 {sections.map((section, key) => (
                   <div
                     onClick={() => setTab(section)}
@@ -593,6 +612,23 @@ export default function Memes() {
                     <span className="font-bold">{section}</span>
                   </div>
                 ))}
+                <div className="flex items-center gap-2 lg:ml-5">
+                  <IoMdColorPalette
+                    size={24}
+                    color={textColor}
+                    onClick={handleIconClick}
+                    className="cursor-pointer"
+                  />
+                  {/* Hidden color input */}
+                  <input
+                    ref={colorInputRef}
+                    id="color-picker"
+                    type="color"
+                    value={textColor}
+                    onChange={handleTextColorChange}
+                    style={{ display: "none" }}
+                  />
+                </div>
               </div>
               <div className="px-4 py-8 flex gap-8 flex-wrap overflow-scroll max-h-[400px]">
                 {allMemes &&
