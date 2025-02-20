@@ -13,7 +13,7 @@ import abi from "@/contracts/Memes.abi.json";
 import axios from "axios";
 import { TbArrowForwardUp, TbArrowBack } from "react-icons/tb";
 import { useHotkeys } from "react-hotkeys-hook";
-import { IoMdColorPalette } from "react-icons/io";
+import { IoMdColorPalette, IoMdCloudUpload } from "react-icons/io";
 import {
   readContract,
   waitForTransactionReceipt,
@@ -60,6 +60,7 @@ const fonts = [
 export default function Memes() {
   const containerRef: any = useRef(null);
   const colorInputRef = useRef<HTMLInputElement>(null);
+  const backgroundUploadInputRef = useRef<HTMLInputElement>(null); // nova referência para upload
 
   const canvasRef = useRef<any>(null);
   const sections = ["Background", "Stickers", "GIFs", "Text"];
@@ -184,10 +185,6 @@ export default function Memes() {
     const scale = 500 / width;
     Object.assign(imgOptions, { scaleX: scale, scaleY: scale });
 
-    // Opcional: limpar o canvas se desejar substituir outros elementos
-    // (Caso não queira limpar, remova ou comente a linha abaixo)
-    // canvas?.clear();
-
     gif.load(async () => {
       // Remove o contêiner oculto após o carregamento
       div.remove();
@@ -225,10 +222,8 @@ export default function Memes() {
         borderScaleFactor: 2,
         objectCaching: false,
       });
-      // Marque o grupo como sendo um grupo de GIF
       canvas.add(group);
       canvas.setActiveObject(group);
-      // Adicione este grupo ao array de grupos de GIF
       setGifGroups((prev) => [...prev, group]);
 
       // Animação: alterna a visibilidade dos frames dentro do grupo
@@ -255,7 +250,6 @@ export default function Memes() {
       oImg.borderScaleFactor = 2;
       oImg.cornerColor = "#FFFFFF";
       oImg.objectCaching = false;
-      // applyCustomControlsToObject(oImg);
       canvas.add(oImg);
       canvas.setActiveObject(oImg);
     });
@@ -273,8 +267,17 @@ export default function Memes() {
       oImg.cornerColor = "#14A800";
       oImg.objectCaching = false;
       canvas.add(oImg);
+      canvas.sendObjectToBack(oImg); // garante que o background fique atrás dos demais elementos
       canvas.setActiveObject(oImg);
     });
+  };
+
+  // Função para tratar o upload do background via input de arquivo
+  const handleBackgroundUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const fileURL = URL.createObjectURL(file);
+    handleAddBackground(fileURL);
   };
 
   const handleDownload = useCallback(async () => {
@@ -290,7 +293,7 @@ export default function Memes() {
       document.body.removeChild(el);
       return;
     }
-    // Para exportar como GIF, neste exemplo, usamos o primeiro grupo de GIF
+    // Para exportar como GIF, neste exemplo usamos o primeiro grupo de GIF
     const group = gifGroups[0];
     const frames = group.getObjects();
     let i = 0;
@@ -350,12 +353,10 @@ export default function Memes() {
   const handleMorph = useCallback(async () => {
     let imageGenerated: any;
 
-    // Se não existir nenhum grupo de GIF, exporta como PNG
     if (gifGroups.length === 0) {
       const dataURL = canvas.toDataURL({ format: "png" });
       imageGenerated = dataURL;
     } else {
-      // Caso exista um grupo de GIF, usa o primeiro grupo para gerar o GIF
       const group = gifGroups[0];
       const frames = group.getObjects();
       let i = 0;
@@ -384,7 +385,6 @@ export default function Memes() {
               return;
             }
 
-            // Define a visibilidade de cada frame de acordo com o frame atual
             frames.forEach((frame: any, index: any) => {
               frame.set("visible", index === i);
             });
@@ -532,13 +532,11 @@ export default function Memes() {
       initialPageParam: 1,
       getNextPageParam: (lastPage) => {
         const { page, pageCount } = lastPage.pagination;
-        // Se a página atual for menor que o total, retorna a próxima página
         return page < pageCount ? page + 1 : undefined;
       },
     });
 
   useEffect(() => {
-    // Se a aba estiver ativa e houver próxima página e não estiver no processo de buscar uma nova página...
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
@@ -568,8 +566,7 @@ export default function Memes() {
     <div className="flex flex-col items-center justify-items-center min-h-screen py-8 px-4">
       <main className="flex flex-col gap-8 items-start justify-start w-full">
         <span className="font-medium text-2xl self-start">
-          Morph your Morphy, download or mint on-chain to rep on socials.
-          Simple!
+          Morph your Morphy, download or mint on-chain to rep on socials. Simple!
         </span>
         <div className="flex space-x-5 flex-col lg:flex-row w-full">
           <div className="flex flex-col lg:flex-row w-full gap-5">
@@ -631,6 +628,25 @@ export default function Memes() {
                 </div>
               </div>
               <div className="px-4 py-8 flex gap-8 flex-wrap overflow-scroll max-h-[400px]">
+                {tab === "Background" && (
+                  <>
+                    <div
+                      onClick={() =>
+                        backgroundUploadInputRef.current?.click()
+                      }
+                      className="border border-gray-500 w-24 h-24 rounded-lg cursor-pointer flex items-center justify-center"
+                    >
+                      <IoMdCloudUpload size={32} className="text-black" />
+                    </div>
+                    <input
+                      type="file"
+                      ref={backgroundUploadInputRef}
+                      accept="image/*"
+                      onChange={handleBackgroundUpload}
+                      style={{ display: "none" }}
+                    />
+                  </>
+                )}
                 {allMemes &&
                   allMemes.length > 0 &&
                   allMemes
