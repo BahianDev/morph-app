@@ -1,18 +1,14 @@
-import Image from "next/image";
-
 interface ImageThumbnailProps {
   src: string;
 }
 
 const ImageThumbnail: React.FC<ImageThumbnailProps> = ({ src }) => {
   return (
-    <div className="w-24 h-24 ">
-      <Image
-        alt={"base"}
+    <div className="w-24 h-24 flex items-center justify-center overflow-hidden">
+      <img
         src={src}
-        width={94}
-        height={94}
-        className="rounded-lg"
+        alt="base"
+        className="rounded-lg max-w-full max-h-full object-contain"
       />
     </div>
   );
