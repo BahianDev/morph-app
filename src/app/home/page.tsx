@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-items-center min-h-screen p-8 gap-16 sm:p-20">
       <main className="flex flex-col gap-8 items-center justify-center">
-        <div className="flex space-x-5 flex-col lg:flex-row">
+        <div className="flex space-x-5 flex-col lg:flex-row items-center">
           <Link href="/home" className="flex flex-col items-center w-full">
             <div className="relative bg-custom-gray hover:bg-primary transition-all duration-1000 p-4 rounded-xl cursor-pointer">
               <img src="/home/morphy.png" alt="MORPH" />
