@@ -25,6 +25,11 @@ const navLinks = [
     title: "Vote",
     path: "/vote",
   },
+  {
+    title: "Trophies",
+    path: "/trophies",
+
+  }
 ];
 
 const Navbar = () => {
