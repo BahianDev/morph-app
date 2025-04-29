@@ -17,6 +17,10 @@ const navLinks = [
     title: "Memes",
     path: "/memes/list",
   },
+  {
+    title: "Leaderboard",
+    path: "/leaderboard",
+  },
 ];
 
 const Navbar = () => {
