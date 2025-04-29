@@ -21,6 +21,10 @@ const navLinks = [
     title: "Leaderboard",
     path: "/leaderboard",
   },
+  {
+    title: "Vote",
+    path: "/vote",
+  },
 ];
 
 const Navbar = () => {
