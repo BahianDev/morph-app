@@ -31,7 +31,7 @@ export default function VotePage() {
   return (
     <div className="bg-gray-100 min-h-screen text-black sm:p-8">
       <main className="flex flex-col items-center">
-        <div className="bg-gray-300 rounded-xl p-6 w-full max-w-3xl text-center">
+        <div className="bg-custom-gray rounded-xl p-6 w-full max-w-3xl text-center">
           <h2 className="text-4xl font-black">
             <span className="text-green-600">MORPH&apos;D</span>{' '}
             <span className="text-white">MEMES</span>
