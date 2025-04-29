@@ -70,7 +70,7 @@ export default function Morphys() {
         });
       });
     },
-    [sections]
+    []
   );
 
   const resetTraitImage = useCallback(() => {

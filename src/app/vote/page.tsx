@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from 'react';
-import Head from 'next/head';
 import { ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useSwipeable } from 'react-swipeable';
 import toast from 'react-hot-toast';
@@ -30,27 +29,11 @@ export default function VotePage() {
   });
 
   return (
-    <div className="bg-gray-100 min-h-screen text-black">
-      <Head>
-        <title>MORPH'D Meme Voting</title>
-      </Head>
-
-      <header className="flex justify-between items-center p-6">
-        <h1 className="text-2xl font-black">MORPH'D</h1>
-        <nav className="flex gap-6 items-center">
-          <a href="#" className="hover:underline">Home</a>
-          <a href="#" className="hover:underline">Morphys</a>
-          <a href="#" className="text-green-600 font-bold">Memes</a>
-          <a href="#" className="hover:underline">Vote</a>
-          <a href="#" className="hover:underline">Leaderboard</a>
-          <button className="bg-green-600 text-white font-bold px-4 py-1 rounded-md">CONNECT</button>
-        </nav>
-      </header>
-
+    <div className="bg-gray-100 min-h-screen text-black sm:p-8">
       <main className="flex flex-col items-center">
         <div className="bg-gray-300 rounded-xl p-6 w-full max-w-3xl text-center">
           <h2 className="text-4xl font-black">
-            <span className="text-green-600">MORPH'D</span>{' '}
+            <span className="text-green-600">MORPH&apos;D</span>{' '}
             <span className="text-white">MEMES</span>
           </h2>
 

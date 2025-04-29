@@ -1,5 +1,3 @@
-// pages/index.js
-import Head from "next/head";
 
 const leaderboard = [
   { rank: "01", name: "MORPHY", address: "0x90sj.....", score: 420000 },
@@ -20,7 +18,7 @@ export default function Home() {
       <main className="flex flex-col items-center">
         <div className="bg-custom-gray rounded-xl p-4 sm:p-6 w-full max-w-6xl">
           <h2 className="text-2xl sm:text-4xl font-black text-center">
-            <span className="text-green-600">MORPH'D</span>{" "}
+            <span className="text-green-600">MORPH&apos;D</span>{" "}
             <span className="text-white">LEADERBOARD</span>
           </h2>
 

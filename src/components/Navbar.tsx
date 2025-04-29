@@ -32,7 +32,7 @@ const Navbar = () => {
 
   const handleToogle = useCallback(() => {
     setIsOpen((prev) => !prev);
-  }, [isOpen]);
+  }, []);
 
   return (
     <header className="flex w-full sticky min-h-16 items-center h-auto bg-nav_bg max-sm:px-4 backdrop-blur-md z-[100] top-0">
