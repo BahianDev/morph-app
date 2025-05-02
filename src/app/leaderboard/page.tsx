@@ -1,18 +1,50 @@
+"use client";
 
-const leaderboard = [
-  { rank: "01", name: "MORPHY", address: "0x90sj.....", score: 420000 },
-  { rank: "02", name: "CZ", address: "0x90sj.....", score: 69000 },
-  { rank: "03", name: "VITALIK", address: "0x90sj.....", score: 69000 },
-  { rank: "04", name: "SATOSHI", address: "0x90sj.....", score: 69000 },
-  { rank: "05", name: "MORPHY", address: "0x90sj.....", score: 69000 },
-  { rank: "07", name: "CZ", address: "0x90sj.....", score: 69000 },
-  { rank: "08", name: "VITALIK", address: "0x90sj.....", score: 69000 },
-  { rank: "09", name: "SATOSHI", address: "0x90sj.....", score: 69000 },
-  { rank: "10", name: "VITALIK", address: "0x90sj.....", score: 69000 },
-  { rank: "11", name: "SATOSHI", address: "0x90sj.....", score: 69000 },
-];
+import { useCallback, useEffect, useState } from "react";
+import { readContract } from "@wagmi/core";
+import { BigNumberish } from "ethers";
+import abi from "@/contracts/NFTVoting.json";
+import { NFT_VOTING_CONTRACT_ADDRESS } from "@/constants";
+import { config } from "@/app/wagmi";
 
-export default function Home() {
+interface Entry {
+  address: string;
+  score: string;
+}
+
+export default function Leaderboard() {
+  const [entries, setEntries] = useState<Entry[] | null>(null);
+
+  const getLeaderboard = useCallback(async () => {
+    try {
+      const [addresses, scores] = (await readContract(config, {
+        address: NFT_VOTING_CONTRACT_ADDRESS,
+        abi,
+        functionName: "getLeaderboard",
+      })) as [string[], BigNumberish[]];
+
+      const data = addresses.map((addr, i) => ({
+        address: addr,
+        score: scores[i].toString(),
+      }));
+      setEntries(data);
+    } catch (err) {
+      console.error("Failed to fetch leaderboard:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    getLeaderboard();
+  }, [getLeaderboard]);
+
+  if (!entries) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-gray-500">Loading leaderboard…</span>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-100 min-h-screen text-black p-4 sm:p-8">
       <main className="flex flex-col items-center">
@@ -23,29 +55,37 @@ export default function Home() {
           </h2>
 
           <div className="mt-6 space-y-2">
-            {leaderboard.map((entry, index) => (
-              <div
-                key={index}
-                className={`flex justify-between items-center p-4 rounded-md ${
-                  index === 0 ? "bg-primary text-white" : "bg-tamber-gray"
-                }`}
-              >
-                <div className="flex gap-4 sm:gap-5 items-center">
-                  <span className="font-bold text-xl sm:text-3xl text-white">
-                    {entry.rank}
-                  </span>
-                  <div className="flex flex-col">
-                    <span className="text-sm sm:text-base font-bold uppercase">
-                      {entry.name}
+            {entries.map((entry, idx) => {
+              const rank = String(idx + 1).padStart(2, "0");
+              const isTop = idx === 0;
+              const abbr = `${entry.address.substring(
+                0,
+                6
+              )}…${entry.address.slice(-4)}`;
+
+              return (
+                <div
+                  key={entry.address}
+                  className={`flex justify-between items-center p-4 rounded-md ${
+                    isTop ? "bg-primary text-white" : "bg-tamber-gray"
+                  }`}
+                >
+                  <div className="flex gap-4 sm:gap-5 items-center">
+                    <span className="font-bold text-xl sm:text-3xl text-white">
+                      {rank}
                     </span>
-                    <span className="text-xs sm:text-base">{entry.address}</span>
+                    <div className="flex flex-col">
+                      <span className="text-sm sm:text-base font-bold uppercase text-white">
+                        {abbr}
+                      </span>
+                    </div>
                   </div>
+                  <span className="text-xl sm:text-3xl font-thin text-white">
+                    {entry.score.toLocaleString()}
+                  </span>
                 </div>
-                <span className="text-xl sm:text-3xl font-thin text-white">
-                  {entry.score.toLocaleString()}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </main>
