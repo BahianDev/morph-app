@@ -7,6 +7,7 @@ import abi from "@/contracts/MorphysNFTS.abi.json";
 import { useCallback, useEffect, useState } from "react";
 import { readContract } from "@wagmi/core";
 import axios from "axios";
+import { MEME_CONTRACT_ADDRESS } from "@/constants";
 
 export default function MemesList() {
   const { address } = useAccount();
@@ -18,7 +19,7 @@ export default function MemesList() {
 
     const supply = await readContract(config, {
       abi,
-      address: "0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff",
+      address: MEME_CONTRACT_ADDRESS,
       functionName: "totalSupply",
     }).then((r) => Number(r));
 
@@ -26,7 +27,7 @@ export default function MemesList() {
 
       const uri = await readContract(config, {
         abi,
-        address: "0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff",
+        address: MEME_CONTRACT_ADDRESS,
         functionName: "tokenURI",
         args: [index + 1],
       }).then((r) => String(r));

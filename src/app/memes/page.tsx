@@ -34,6 +34,7 @@ import {
   Oswald,
 } from "next/font/google";
 import { NextFont } from "next/dist/compiled/@next/font";
+import { MEME_CONTRACT_ADDRESS } from "@/constants";
 
 const anton = Anton({ subsets: ["latin"], weight: ["400"] });
 const bebas_Neue = Bebas_Neue({ subsets: ["latin"], weight: ["400"] });
@@ -409,7 +410,7 @@ export default function Memes() {
 
       const tokenId = await readContract(config, {
         abi,
-        address: "0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff",
+        address: MEME_CONTRACT_ADDRESS,
         functionName: "totalSupply",
       }).then((r) => Number(r) + 1);
 
@@ -429,7 +430,7 @@ export default function Memes() {
 
       const result = await writeContract(config, {
         abi,
-        address: "0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff",
+        address: MEME_CONTRACT_ADDRESS,
         functionName: "safeMint",
         args: [
           `https://morphd.s3.us-east-2.amazonaws.com/memes/metadata/${tokenId}.json`,
@@ -453,7 +454,7 @@ export default function Memes() {
           <a
             className="font-bold text-lg"
             target="_blank"
-            href={`https://explorer-holesky.morphl2.io/token/0x1DA30aE96ba8dA73177a72dBf9378b6D10aee9ff/instance/${tokenId}`}
+            href={`https://explorer-holesky.morphl2.io/token/${MEME_CONTRACT_ADDRESS}/instance/${tokenId}`}
           >
             Click to see Morph Explorer
           </a>
