@@ -16,28 +16,37 @@ export default function MemesList() {
 
   const getNfts = useCallback(async () => {
     if (!address) return;
-
+  
+    setNfts([]);
+  
     const supply = await readContract(config, {
       abi,
       address: MEME_CONTRACT_ADDRESS,
       functionName: "totalSupply",
     }).then((r) => Number(r));
-
+  
     for (let index = 0; index < supply; index++) {
-
+      const tokenId = index + 1;
       const uri = await readContract(config, {
         abi,
         address: MEME_CONTRACT_ADDRESS,
         functionName: "tokenURI",
-        args: [index + 1],
-      }).then((r) => String(r));
-
-      const { data: metadata } = await axios.get(uri);
-
-      console.log(metadata);
-      setNfts((prev) => [...prev, metadata]);
+        args: [tokenId],
+      }).then(String);
+  
+      const { data: metadata }: any = await axios.get(uri);
+  
+      // adiciona o tokenId no objeto antes de setar
+      setNfts((prev) => [
+        ...prev,
+        {
+          tokenId,
+          ...metadata,
+        },
+      ]);
     }
   }, [address]);
+  
 
   useEffect(() => {
     getNfts();
@@ -53,7 +62,7 @@ export default function MemesList() {
           {nfts &&
             nfts.length > 0 &&
             nfts.map((nft, key) => (
-              <Card key={key} attributes={nft.attributes} image={nft.image} name={nft.name} />
+              <Card key={key} attributes={nft.attributes} image={nft.image} name={nft.name} id={nft.tokenId} />
             ))}
         </div>
       </div>

@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { FaTwitter } from "react-icons/fa";
 
 interface IProps {
+  id: string;           
   name: string;
   image: string;
   attributes: {
@@ -12,15 +14,24 @@ interface IProps {
   }[];
 }
 
-function Card({ name, image, attributes }: IProps) {
+export default function Card({ name, image, attributes, id }: IProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleCollapse = () => {
     setIsOpen(!isOpen);
   };
 
+  const shareOnX = () => {
+    const shareUrl = `${window.location.origin}/memes/${id}`;
+    const text = `Check out my "${name}" meme!`;
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  };
   return (
-    <div className="w-80 h-fit bg-white rounded-lg">
+    <div className="w-80 h-fit bg-white rounded-lg shadow-md">
       <div className="bg-[#989898] p-2 rounded-t-lg">
         <span className="text-white font-bold text-lg">{name}</span>
       </div>
@@ -33,6 +44,18 @@ function Card({ name, image, attributes }: IProps) {
           className="rounded-lg"
         />
       </div>
+
+      {/* Share button */}
+      <div className="px-5 pb-4">
+        <button
+          onClick={shareOnX}
+          className="flex items-center justify-center w-full bg-black text-white font-bold py-2 rounded-lg transition-colors duration-200"
+        >
+          <FaTwitter className="mr-2" />
+          Share on X
+        </button>
+      </div>
+
       {attributes.length > 0 && (
         <div className="bg-white p-4 rounded-lg relative">
           <button
@@ -47,25 +70,22 @@ function Card({ name, image, attributes }: IProps) {
               isOpen ? "max-h-72 pb-4 rounded-b-lg" : "max-h-0"
             }`}
           >
-            {attributes.length > 0 &&
-              attributes.map((attribute, key) => (
-                <div
-                  key={key}
-                  className="bg-[#AEAEAE] flex flex-col w-32 text-xs rounded-lg text-white"
-                >
-                  <div className="bg-[#989898] rounded-t-lg p-1 font-bold">
-                    {attribute.trait_type}
-                  </div>
-                  <div className="h-10 flex items-center px-1">
-                    {attribute.value}
-                  </div>
+            {attributes.map((attribute, key) => (
+              <div
+                key={key}
+                className="bg-[#AEAEAE] flex flex-col w-32 text-xs rounded-lg text-white"
+              >
+                <div className="bg-[#989898] rounded-t-lg p-1 font-bold">
+                  {attribute.trait_type}
                 </div>
-              ))}
+                <div className="h-10 flex items-center px-1">
+                  {attribute.value}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
     </div>
   );
 }
-
-export default Card;
