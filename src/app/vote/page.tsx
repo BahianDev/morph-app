@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { useSwipeable } from "react-swipeable";
 import toast from "react-hot-toast";
@@ -65,6 +65,18 @@ export default function VotePage() {
 
   const handleVote = async (type: "like" | "dislike") => {
     try {
+      const isOwner = Number(
+        await readContract(config, {
+          abi,
+          address: MEME_CONTRACT_ADDRESS,
+          functionName: "balanceOf",
+        })
+      );
+
+      if (isOwner === 0) {
+        return toast.error("To vote, you need to Morph a Meme first!")
+      }
+  
       if (type === "like") {
         await writeContractAsync({
           address: NFT_VOTING_CONTRACT_ADDRESS,
@@ -101,6 +113,7 @@ export default function VotePage() {
           <span className="text-green-600">MORPH’D</span>{" "}
           <span className="text-white">MEMES</span>
         </h2>
+        <span>To vote, you need to Morph a Meme first!</span>
         {current && (
           <>
             <div className="mt-10 flex">
