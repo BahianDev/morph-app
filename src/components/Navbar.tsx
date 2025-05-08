@@ -3,37 +3,27 @@
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { ConnectWallet } from "./ConnectWallet";
+import { useAccount } from "wagmi";
 
 const navLinks = [
-  {
-    title: "Home",
-    path: "/home",
-  },
-  {
-    title: "Memes",
-    path: "/memes/list",
-  },
-  {
-    title: "Leaderboard",
-    path: "/leaderboard",
-  },
-  {
-    title: "Vote",
-    path: "/vote",
-  },
-  {
-    title: "Trophies",
-    path: "/trophies",
-
-  }
+  { title: "Home", path: "/home" },
+  { title: "Memes", path: "/memes/list" },
+  { title: "Leaderboard", path: "/leaderboard", requiresConnection: true },
+  { title: "Vote", path: "/vote" },
+  { title: "Trophies", path: "/trophies", requiresConnection: true },
 ];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-
   const handleToogle = useCallback(() => {
     setIsOpen((prev) => !prev);
   }, []);
+
+  const { isConnected } = useAccount();
+
+  const visibleLinks = navLinks.filter(
+    (link) => !link.requiresConnection || isConnected
+  );
 
   return (
     <header className="flex w-full sticky min-h-16 items-center h-auto bg-nav_bg max-sm:px-4 backdrop-blur-md z-[100] top-0">
@@ -65,7 +55,7 @@ const Navbar = () => {
             isOpen ? "max-sm:clip-nav-path-active mt-5" : "max-sm:clip-nav-path"
           } `}
         >
-          {navLinks.map(({ title, path }, index) => (
+          {visibleLinks.map(({ title, path }, index) => (
             <li key={index}>
               <Link href={path} className="font-medium text-2xl">
                 {title}
@@ -80,4 +70,5 @@ const Navbar = () => {
     </header>
   );
 };
+
 export default Navbar;
