@@ -10,10 +10,6 @@ const navLinks = [
     path: "/home",
   },
   {
-    title: "Morphys",
-    path: "/morphys/list",
-  },
-  {
     title: "Memes",
     path: "/memes/list",
   },
