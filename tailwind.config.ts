@@ -12,12 +12,11 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
         primary: "#14A800",
+        primaryTransparent: "rgba(20, 168, 0, 0.5)",
         "custom-gray": "#D9D9D9",
         "tamber-gray": "#ADADAD",
       },
     },
   },
-  plugins: [
-    require('daisyui'),
-  ],
+  plugins: [require("daisyui")],
 } satisfies Config;
