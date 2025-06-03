@@ -52,7 +52,7 @@ export default function MorphysList() {
           {nfts &&
             nfts.length > 0 &&
             nfts.map((nft, key) => (
-              <Card key={key} attributes={nft.attributes} image={nft.image} name={nft.name} />
+              <Card id={key.toString()} key={key} attributes={nft.attributes} image={nft.image} name={nft.name} />
             ))}
         </div>
       </div>

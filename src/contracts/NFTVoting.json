@@ -128,6 +128,31 @@
         "type": "event"
     },
     {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "voter",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "positiveCount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "negativeCount",
+                "type": "uint256"
+            }
+        ],
+        "name": "VotesBatchProcessed",
+        "type": "event"
+    },
+    {
         "inputs": [
             {
                 "internalType": "address",
@@ -344,25 +369,17 @@
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "voteNegative",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
+                "internalType": "uint256[]",
+                "name": "positiveVotes",
+                "type": "uint256[]"
+            },
             {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
+                "internalType": "uint256[]",
+                "name": "negativeVotes",
+                "type": "uint256[]"
             }
         ],
-        "name": "votePositive",
+        "name": "voteBatch",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

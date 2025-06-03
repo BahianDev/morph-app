@@ -117,18 +117,18 @@ export default function VotePage() {
       if (prev >= memeSupply) return 1; // Wrap around to first meme
       return prev + 1;
     });
-  }, [memeSupply, pendingVotes]);
+  }, [memeSupply]);
 
   const submitVotes = useCallback(async () => {
     if (pendingVotes.length === 0 || isSubmitting) return;
 
     setIsSubmitting(true);
     try {
-      const hasOwnership = await checkOwnership();
-      if (!hasOwnership) {
-        toast.error("To vote, you need to Morph a Meme first!");
-        return;
-      }
+      // const hasOwnership = await checkOwnership();
+      // if (!hasOwnership) {
+      //   toast.error("To vote, you need to Morph a Meme first!");
+      //   return;
+      // }
 
       // Group votes by type
       const positiveVotes = pendingVotes
