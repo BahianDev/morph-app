@@ -466,7 +466,7 @@ export default function Memes() {
           <a
             className="font-bold text-lg"
             target="_blank"
-            href={`https://explorer-holesky.morphl2.io/token/${MEME_CONTRACT_ADDRESS}/instance/${tokenId}`}
+            href={`https://explorer.morphl2.io/token/${MEME_CONTRACT_ADDRESS}/instance/${tokenId}`}
           >
             Click to see Morph Explorer
           </a>
