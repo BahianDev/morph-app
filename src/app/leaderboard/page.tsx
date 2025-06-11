@@ -61,7 +61,7 @@ export default function Leaderboard() {
           </h2>
 
           <div className="mt-6 space-y-2">
-            {entries!.map((entry, idx) => {
+            {entries?.map((entry, idx) => {
               const rank = String(idx + 1).padStart(2, "0");
               const isTop = idx === 0;
               const abbr = `${entry.address.substring(
