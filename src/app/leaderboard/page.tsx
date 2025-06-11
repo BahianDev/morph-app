@@ -1,46 +1,52 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { readContract } from "@wagmi/core";
-import { BigNumberish } from "ethers";
-import abi from "@/contracts/NFTVoting.json";
-import { NFT_VOTING_CONTRACT_ADDRESS } from "@/constants";
-import { config } from "@/app/wagmi";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { api_backend } from "@/services/api";
+import { useAccount } from "wagmi";
 
-interface Entry {
+interface LeaderboardEntry {
   address: string;
-  score: string;
+  networkScore: number;
+  backendPoints: number;
+  totalScore: number;
 }
 
+/**
+ * Busca leaderboard combinada do backend
+ */
+const fetchLeaderboard = async (): Promise<LeaderboardEntry[]> => {
+  const { data } = await api_backend.get("memes/leaderboard");
+  return data;
+};
+
 export default function Leaderboard() {
-  const [entries, setEntries] = useState<Entry[] | null>(null);
+  const { isConnected, address } = useAccount();
 
-  const getLeaderboard = useCallback(async () => {
-    try {
-      const [addresses, scores] = (await readContract(config, {
-        address: NFT_VOTING_CONTRACT_ADDRESS,
-        abi,
-        functionName: "getLeaderboard",
-      })) as [string[], BigNumberish[]];
+  const {
+    data: entries,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: () => fetchLeaderboard(),
+    enabled: isConnected && !!address,
+    refetchOnWindowFocus: false,
+  });
 
-      const data = addresses.map((addr, i) => ({
-        address: addr,
-        score: scores[i].toString(),
-      }));
-      setEntries(data);
-    } catch (err) {
-      console.error("Failed to fetch leaderboard:", err);
-    }
-  }, []);
-
-  useEffect(() => {
-    getLeaderboard();
-  }, [getLeaderboard]);
-
-  if (!entries) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <span className="text-gray-500">Loading leaderboard…</span>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-red-500">Error: {(error as Error).message}</span>
       </div>
     );
   }
@@ -55,7 +61,7 @@ export default function Leaderboard() {
           </h2>
 
           <div className="mt-6 space-y-2">
-            {entries.map((entry, idx) => {
+            {entries!.map((entry, idx) => {
               const rank = String(idx + 1).padStart(2, "0");
               const isTop = idx === 0;
               const abbr = `${entry.address.substring(
@@ -81,7 +87,7 @@ export default function Leaderboard() {
                     </div>
                   </div>
                   <span className="text-xl sm:text-3xl font-thin text-white">
-                    {entry.score.toLocaleString()}
+                    {entry.totalScore.toLocaleString()}
                   </span>
                 </div>
               );

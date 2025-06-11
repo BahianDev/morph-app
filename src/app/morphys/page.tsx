@@ -49,6 +49,8 @@ export default function Morphys() {
     initialData: [],
   });
 
+
+
   const addTraitImage = useCallback(
     (type: string, url: string, name: string) => {
       setMountedImage((prev) => {

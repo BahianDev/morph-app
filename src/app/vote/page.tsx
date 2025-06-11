@@ -20,6 +20,7 @@ import {
 } from "@/constants";
 import { config } from "@/app/wagmi";
 import axios from "axios";
+import { api_backend } from "@/services/api";
 
 interface Meme {
   id: number;
@@ -145,6 +146,11 @@ export default function VotePage() {
         abi: votingBbi,
         functionName: "voteBatch",
         args: [positiveVotes, negativeVotes],
+      });
+
+      await api_backend.post("memes/votes", {
+        wallet: address,
+        votes: pendingVotes,
       });
 
       toast.success(`Submitted ${pendingVotes.length} votes!`);

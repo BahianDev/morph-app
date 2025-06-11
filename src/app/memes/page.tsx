@@ -35,6 +35,8 @@ import {
 } from "next/font/google";
 import { NextFont } from "next/dist/compiled/@next/font";
 import { MEME_CONTRACT_ADDRESS } from "@/constants";
+import { api_backend } from "@/services/api";
+import { useAccount } from "wagmi";
 
 const anton = Anton({ subsets: ["latin"], weight: ["400"] });
 const bebas_Neue = Bebas_Neue({ subsets: ["latin"], weight: ["400"] });
@@ -59,6 +61,8 @@ const fonts = [
 ];
 
 export default function Memes() {
+    const { isConnected, address } = useAccount();
+  
   const containerRef: any = useRef(null);
   const colorInputRef = useRef<HTMLInputElement>(null);
   const backgroundUploadInputRef = useRef<HTMLInputElement>(null); // nova referência para upload
@@ -354,6 +358,10 @@ export default function Memes() {
   const handleMorph = useCallback(async () => {
     let imageGenerated: any;
 
+    if (!isConnected || !address) {
+      return toast.error("Please, connect your wallet!")
+    }
+
     if (gifGroups.length === 0) {
       const dataURL = canvas.toDataURL({ format: "png" });
       imageGenerated = dataURL;
@@ -436,6 +444,10 @@ export default function Memes() {
           `https://morphd.s3.us-east-2.amazonaws.com/memes/metadata/${tokenId}.json`,
         ],
       });
+
+      await api_backend.post(`memes/${tokenId}/mint`, {
+        wallet: address
+      })
 
       toast.dismiss();
 
