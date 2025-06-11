@@ -13,41 +13,50 @@ export default function MemesList() {
   const { address } = useAccount();
   const [nfts, setNfts] = useState<any[]>([]);
 
-  const getNfts = useCallback(async () => {
-    if (!address) return;
+const getNfts = useCallback(async () => {
+  if (!address) return;
 
-    setNfts([]);
+  setNfts([]);
 
-    const supply = await readContract(config, {
+  // 1. Pega a quantidade total
+  const supply = Number(
+    await readContract(config, {
       abi,
       address: MEME_CONTRACT_ADDRESS,
       functionName: "totalSupply",
-    }).then((r) => Number(r));
+    })
+  );
 
-    const loaded: any[] = [];
-    for (let index = 0; index < supply; index++) {
-      const tokenId = index + 1;
-      const uri = await readContract(config, {
-        abi,
-        address: MEME_CONTRACT_ADDRESS,
-        functionName: "tokenURI",
-        args: [tokenId],
-      }).then(String);
+  // 2. Gera o array de tokenIds
+  const tokenIds = Array.from({ length: supply }, (_, i) => i + 1);
 
-      const { data: metadata }: any = await axios.get(uri);
+  // 3. Em paralelo, busca todas as URIs
+  const uriPromises = tokenIds.map((tokenId) =>
+    readContract(config, {
+      abi,
+      address: MEME_CONTRACT_ADDRESS,
+      functionName: "tokenURI",
+      args: [tokenId],
+    }).then(String)
+  );
+  const uris = await Promise.all(uriPromises);
 
-      // Quebra cache adicionando timestamp
-      const cacheBustedImage = `${metadata.image}?ts=${Date.now()}`;
+  // 4. Em paralelo, faz todas as requisições HTTP
+  const metadataPromises = uris.map((uri) =>
+    axios.get(uri).then(({ data }) => data as any)
+  );
+  const metadatas = await Promise.all(metadataPromises);
 
-      loaded.push({
-        tokenId,
-        ...metadata,
-        image: cacheBustedImage,
-      });
-    }
+  // 5. Anexa timestamp só uma vez e monta o array final
+  const ts = Date.now();
+  const loaded = metadatas.map((metadata, idx) => ({
+    tokenId: tokenIds[idx],
+    ...metadata,
+    image: `${metadata.image}?ts=${ts}`,
+  }));
 
-    setNfts(loaded);
-  }, [address]);
+  setNfts(loaded);
+}, [address]);
 
   useEffect(() => {
     getNfts();
