@@ -76,13 +76,13 @@ export default function Trophies() {
   }
 
   if (isLoading) {
-    return <div className="mt-10 text-center">Loading trophies...</div>;
+    return <div className="mt-10 text-center min-h-screen">Loading trophies...</div>;
   }
 
   if (isError) {
     return (
-      <div className="mt-10 text-center text-red-500">
-        Error loading trophies: {(error as Error).message}
+      <div className="mt-10 text-center text-black min-h-screen">
+        User not found!
       </div>
     );
   }
@@ -90,10 +90,10 @@ export default function Trophies() {
   // Ordena: primeiro desbloqueados, depois bloqueados
   const sortedTrophies = [
     ...TROPHY_DEFINITIONS.filter(def =>
-      userData!.trophies.some(t => t.type === def.type)
+      userData?.trophies.some(t => t.type === def.type)
     ),
     ...TROPHY_DEFINITIONS.filter(def =>
-      !userData!.trophies.some(t => t.type === def.type)
+      !userData?.trophies.some(t => t.type === def.type)
     ),
   ];
 
@@ -108,7 +108,7 @@ export default function Trophies() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-10">
             {sortedTrophies.map(({ id, title, type }) => {
-              const unlocked = userData!.trophies.some(t => t.type === type);
+              const unlocked = userData?.trophies.some(t => t.type === type);
               const icon = `/trophies/${type}.png`;
               return (
                 <div
