@@ -487,7 +487,7 @@ export default function Memes() {
         console.error("Erro inesperado:", error);
       }
     }
-  }, [gifGroups, canvas, gifInterval]);
+  }, [gifGroups, canvas, gifInterval, address]);
 
   const handleClear = useCallback(() => {
     canvas?.getObjects().forEach((obj: any) => {
