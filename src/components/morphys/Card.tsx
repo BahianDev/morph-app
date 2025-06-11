@@ -47,13 +47,13 @@ export default function Card({ name, image, attributes, id }: IProps) {
 
       {/* Share button */}
       <div className="px-5 pb-4">
-        <button
+        {/* <button
           onClick={shareOnX}
           className="flex items-center justify-center w-full bg-black text-white font-bold py-2 rounded-lg transition-colors duration-200"
         >
           <FaTwitter className="mr-2" />
           Share on X
-        </button>
+        </button> */}
       </div>
 
       {attributes.length > 0 && (

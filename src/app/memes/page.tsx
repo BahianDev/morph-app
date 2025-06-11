@@ -703,12 +703,6 @@ export default function Memes() {
             RESET
           </button>
           <button
-            onClick={handleDownload}
-            className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
-          >
-            DOWNLOAD
-          </button>
-          <button
             onClick={handleMorph}
             className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
           >
