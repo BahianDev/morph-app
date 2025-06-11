@@ -7,30 +7,33 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
 import { config } from "./wagmi";
 import { Toaster } from "react-hot-toast";
+import { SessionProvider } from "next-auth/react";
 
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              style: {
-                border: "1px solid #14A800",
-                color: "#000000",
-                fontWeight: "bold",
-                backgroundColor: "#FFFFFF",
-                padding: "12px",
-                fontSize: "18px",
-              },
-            }}
-          />
-          {children}
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <SessionProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                style: {
+                  border: "1px solid #14A800",
+                  color: "#000000",
+                  fontWeight: "bold",
+                  backgroundColor: "#FFFFFF",
+                  padding: "12px",
+                  fontSize: "18px",
+                },
+              }}
+            />
+            {children}
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </SessionProvider>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import { ConnectWallet } from "./ConnectWallet";
 import { useAccount } from "wagmi";
+import TwitterButton from "./TwitterButton";
 
 const navLinks = [
   { title: "Home", path: "/home" },
@@ -64,6 +65,9 @@ const Navbar = () => {
           ))}
           <li className="hidden md:flex">
             <ConnectWallet />
+          </li>
+          <li className="hidden md:flex">
+            <TwitterButton />
           </li>
         </ul>
       </nav>

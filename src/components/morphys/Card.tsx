@@ -5,7 +5,7 @@ import { useState } from "react";
 import { FaTwitter } from "react-icons/fa";
 
 interface IProps {
-  id: string;           
+  id: string;
   name: string;
   image: string;
   attributes: {
@@ -21,20 +21,30 @@ export default function Card({ name, image, attributes, id }: IProps) {
     setIsOpen(!isOpen);
   };
 
-  const shareOnX = () => {
-    const shareUrl = `${window.location.origin}/memes/${id}`;
-    const text = `Check out my "${name}" meme!`;
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
+  const shareOnX = async () => {
+    try {
+      const res = await fetch("/api/tweet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageUrl: image,
+          text: `Confira este Morph’d Meme: ${name} #${id}`,
+        }),
+      });
+      if (!res.ok) throw new Error("Falha ao postar");
+      alert("Tweet enviado com sucesso!");
+    } catch (e) {
+      console.error(e);
+      alert("Não foi possível enviar o tweet.");
+    }
   };
+
   return (
     <div className="w-80 h-fit bg-white rounded-lg shadow-md">
       <div className="bg-[#989898] p-2 rounded-t-lg">
         <span className="text-white font-bold text-lg">{name}</span>
       </div>
+
       <div className="p-5">
         <Image
           src={image}
@@ -47,13 +57,13 @@ export default function Card({ name, image, attributes, id }: IProps) {
 
       {/* Share button */}
       <div className="px-5 pb-4">
-        {/* <button
+        <button
           onClick={shareOnX}
-          className="flex items-center justify-center w-full bg-black text-white font-bold py-2 rounded-lg transition-colors duration-200"
+          className="flex items-center justify-center w-full bg-black text-white font-bold py-2 rounded-lg transition-colors duration-200 hover:opacity-90"
         >
           <FaTwitter className="mr-2" />
           Share on X
-        </button> */}
+        </button>
       </div>
 
       {attributes.length > 0 && (
