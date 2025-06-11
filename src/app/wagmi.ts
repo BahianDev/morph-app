@@ -3,14 +3,14 @@ import {
   rainbowWallet,
   walletConnectWallet,
   bitgetWallet,
-  metaMaskWallet
+  metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { morphHolesky } from "wagmi/chains";
+import { morph } from "wagmi/chains";
 
 export const config = getDefaultConfig({
   appName: "RainbowKit demo",
   projectId: "YOUR_PROJECT_ID",
-  chains: [morphHolesky],
+  chains: [morph],
   ssr: true,
   wallets: [
     {
