@@ -5,7 +5,7 @@ const api = axios.create({
 });
 
 const api_backend = axios.create({
-  baseURL: 'http://localhost:3001/'
+  baseURL: 'https://trophy-system-4e77f4028f3e.herokuapp.com/'
 });
 
 export { api, api_backend };
