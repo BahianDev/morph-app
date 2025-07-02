@@ -61,14 +61,14 @@ const fonts = [
 ];
 
 export default function Memes() {
-    const { isConnected, address } = useAccount();
-  
+  const { isConnected, address } = useAccount();
+
   const containerRef: any = useRef(null);
   const colorInputRef = useRef<HTMLInputElement>(null);
   const backgroundUploadInputRef = useRef<HTMLInputElement>(null); // nova referência para upload
 
   const canvasRef = useRef<any>(null);
-  const sections = ["Background", "Stickers", "GIFs", "Text"];
+  const sections = ["Background", "Zootosis BG", "Stickers", "Zootosis SK", "GIFs", "Text"];
 
   const [textColor, setTextColor] = useState("#000000");
 
@@ -359,7 +359,7 @@ export default function Memes() {
     let imageGenerated: any;
 
     if (!isConnected || !address) {
-      return toast.error("Please, connect your wallet!")
+      return toast.error("Please, connect your wallet!");
     }
 
     if (gifGroups.length === 0) {
@@ -446,8 +446,8 @@ export default function Memes() {
       });
 
       await api_backend.post(`memes/${tokenId}/mint`, {
-        wallet: address
-      })
+        wallet: address,
+      });
 
       toast.dismiss();
 
@@ -579,7 +579,8 @@ export default function Memes() {
     <div className="flex flex-col items-center justify-items-center min-h-screen py-8 px-4">
       <main className="flex flex-col gap-8 items-start justify-start w-full">
         <span className="font-medium text-2xl self-start">
-          Morph your Morphy, download or mint on-chain to rep on socials. Simple!
+          Morph your Morphy, download or mint on-chain to rep on socials.
+          Simple!
         </span>
         <div className="flex space-x-5 flex-col lg:flex-row w-full">
           <div className="flex flex-col lg:flex-row w-full gap-5">
@@ -644,9 +645,7 @@ export default function Memes() {
                 {tab === "Background" && (
                   <>
                     <div
-                      onClick={() =>
-                        backgroundUploadInputRef.current?.click()
-                      }
+                      onClick={() => backgroundUploadInputRef.current?.click()}
                       className="border border-gray-500 w-24 h-24 rounded-lg cursor-pointer flex items-center justify-center"
                     >
                       <IoMdCloudUpload size={32} className="text-black" />
@@ -674,6 +673,10 @@ export default function Memes() {
                             return await handleAddStikcer(trait.image.url);
                           } else if (tab === "Background") {
                             return await handleAddBackground(trait.image.url);
+                          } else if (tab === "Zootosis BG") {
+                            return await handleAddBackground(trait.image.url);
+                          } else if (tab === "Zootosis SK") {
+                            return await handleAddStikcer(trait.image.url);
                           }
                         }}
                         className="border border-gray-500 w-24 h-24 rounded-lg cursor-pointer"
