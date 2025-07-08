@@ -68,7 +68,7 @@ export default function Memes() {
   const backgroundUploadInputRef = useRef<HTMLInputElement>(null); // nova referência para upload
 
   const canvasRef = useRef<any>(null);
-  const sections = ["Background", "Zootosis BG", "Stickers", "Zootosis SK", "GIFs", "Text"];
+  const sections = ["Background", "Stickers", "Zootosis", "GIFs", "Text"];
 
   const [textColor, setTextColor] = useState("#000000");
 
@@ -675,7 +675,7 @@ export default function Memes() {
                             return await handleAddBackground(trait.image.url);
                           } else if (tab === "Zootosis BG") {
                             return await handleAddBackground(trait.image.url);
-                          } else if (tab === "Zootosis SK") {
+                          } else if (tab === "Zootosis") {
                             return await handleAddStikcer(trait.image.url);
                           }
                         }}
