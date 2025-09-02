@@ -356,137 +356,137 @@ export default function Memes() {
   }, [gifGroups, canvas, gifInterval]);
 
   const handleMorph = useCallback(async () => {
-    let imageGenerated: any;
+    // let imageGenerated: any;
 
-    if (!isConnected || !address) {
-      return toast.error("Please, connect your wallet!");
-    }
+    // if (!isConnected || !address) {
+    //   return toast.error("Please, connect your wallet!");
+    // }
 
-    if (gifGroups.length === 0) {
-      const dataURL = canvas.toDataURL({ format: "png" });
-      imageGenerated = dataURL;
-    } else {
-      const group = gifGroups[0];
-      const frames = group.getObjects();
-      let i = 0;
-      const dataImages: Array<any> = [];
+    // if (gifGroups.length === 0) {
+    //   const dataURL = canvas.toDataURL({ format: "png" });
+    //   imageGenerated = dataURL;
+    // } else {
+    //   const group = gifGroups[0];
+    //   const frames = group.getObjects();
+    //   let i = 0;
+    //   const dataImages: Array<any> = [];
 
-      const processFrames = async (): Promise<void> => {
-        return new Promise((resolve) => {
-          const processFrame = async () => {
-            if (i >= frames.length) {
-              try {
-                const gif = await createGIF(dataImages, {
-                  gifWidth: 1080,
-                  gifHeight: 1080,
-                  interval: gifInterval / 1000,
-                  sampleInterval: 10,
-                  progressCallback: (progress: number) => {
-                    console.log(progress);
-                  },
-                });
-                imageGenerated = gif;
-                dataImages.length = 0;
-              } catch (e) {
-                console.error("Erro ao criar o GIF:", e);
-              }
-              resolve();
-              return;
-            }
+    //   const processFrames = async (): Promise<void> => {
+    //     return new Promise((resolve) => {
+    //       const processFrame = async () => {
+    //         if (i >= frames.length) {
+    //           try {
+    //             const gif = await createGIF(dataImages, {
+    //               gifWidth: 1080,
+    //               gifHeight: 1080,
+    //               interval: gifInterval / 1000,
+    //               sampleInterval: 10,
+    //               progressCallback: (progress: number) => {
+    //                 console.log(progress);
+    //               },
+    //             });
+    //             imageGenerated = gif;
+    //             dataImages.length = 0;
+    //           } catch (e) {
+    //             console.error("Erro ao criar o GIF:", e);
+    //           }
+    //           resolve();
+    //           return;
+    //         }
 
-            frames.forEach((frame: any, index: any) => {
-              frame.set("visible", index === i);
-            });
+    //         frames.forEach((frame: any, index: any) => {
+    //           frame.set("visible", index === i);
+    //         });
 
-            try {
-              dataImages.push(canvas.toDataURL());
-            } catch (e) {
-              console.error("Erro ao capturar o frame:", e);
-            }
-            i++;
-            setTimeout(processFrame, 40);
-          };
-          processFrame();
-        });
-      };
+    //         try {
+    //           dataImages.push(canvas.toDataURL());
+    //         } catch (e) {
+    //           console.error("Erro ao capturar o frame:", e);
+    //         }
+    //         i++;
+    //         setTimeout(processFrame, 40);
+    //       };
+    //       processFrame();
+    //     });
+    //   };
 
-      await processFrames();
-    }
+    //   await processFrames();
+    // }
 
-    try {
-      toast.loading("Uploading metadata...");
+    // try {
+    //   toast.loading("Uploading metadata...");
 
-      const tokenId = await readContract(config, {
-        abi,
-        address: MEME_CONTRACT_ADDRESS,
-        functionName: "totalSupply",
-      }).then((r) => Number(r) + 1);
+    //   const tokenId = await readContract(config, {
+    //     abi,
+    //     address: MEME_CONTRACT_ADDRESS,
+    //     functionName: "totalSupply",
+    //   }).then((r) => Number(r) + 1);
 
-      const formData = new FormData();
-      formData.set("file", base64ToBlob(imageGenerated));
-      formData.set("tokenId", String(tokenId));
+    //   const formData = new FormData();
+    //   formData.set("file", base64ToBlob(imageGenerated));
+    //   formData.set("tokenId", String(tokenId));
 
-      await axios.post("/memes/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+    //   await axios.post("/memes/upload", formData, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   });
 
-      toast.dismiss();
+    //   toast.dismiss();
 
-      toast.loading("Sending transaction...");
+    //   toast.loading("Sending transaction...");
 
-      const result = await writeContract(config, {
-        abi,
-        address: MEME_CONTRACT_ADDRESS,
-        functionName: "safeMint",
-        args: [
-          `https://morphd.s3.us-east-2.amazonaws.com/memes/metadata/${tokenId}.json`,
-        ],
-      });
+    //   const result = await writeContract(config, {
+    //     abi,
+    //     address: MEME_CONTRACT_ADDRESS,
+    //     functionName: "safeMint",
+    //     args: [
+    //       `https://morphd.s3.us-east-2.amazonaws.com/memes/metadata/${tokenId}.json`,
+    //     ],
+    //   });
 
-      await api_backend.post(`memes/${tokenId}/mint`, {
-        wallet: address,
-      });
+    //   await api_backend.post(`memes/${tokenId}/mint`, {
+    //     wallet: address,
+    //   });
 
-      toast.dismiss();
+    //   toast.dismiss();
 
-      toast.loading("Confirming transaction...");
+    //   toast.loading("Confirming transaction...");
 
-      const transactionReceipt = await waitForTransactionReceipt(config, {
-        hash: result,
-      });
+    //   const transactionReceipt = await waitForTransactionReceipt(config, {
+    //     hash: result,
+    //   });
 
-      toast.dismiss();
+    //   toast.dismiss();
 
-      toast.custom(
-        <div className="flex items-center gap-2 bg-white border-2 border-primary p-3 rounded-lg">
-          <IoMdCheckmarkCircle size={10} className="w-10 h-10 text-primary" />
+    //   toast.custom(
+    //     <div className="flex items-center gap-2 bg-white border-2 border-primary p-3 rounded-lg">
+    //       <IoMdCheckmarkCircle size={10} className="w-10 h-10 text-primary" />
 
-          <a
-            className="font-bold text-lg"
-            target="_blank"
-            href={`https://explorer.morphl2.io/token/${MEME_CONTRACT_ADDRESS}/instance/${tokenId}`}
-          >
-            Click to see Morph Explorer
-          </a>
-        </div>,
-        {
-          duration: 4000,
-        }
-      );
+    //       <a
+    //         className="font-bold text-lg"
+    //         target="_blank"
+    //         href={`https://explorer.morphl2.io/token/${MEME_CONTRACT_ADDRESS}/instance/${tokenId}`}
+    //       >
+    //         Click to see Morph Explorer
+    //       </a>
+    //     </div>,
+    //     {
+    //       duration: 4000,
+    //     }
+    //   );
 
-      return transactionReceipt;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(
-          "Erro na solicitação Axios:",
-          error.response?.data || error.message
-        );
-      } else {
-        console.error("Erro inesperado:", error);
-      }
-    }
+    //   return transactionReceipt;
+    // } catch (error) {
+    //   if (axios.isAxiosError(error)) {
+    //     console.error(
+    //       "Erro na solicitação Axios:",
+    //       error.response?.data || error.message
+    //     );
+    //   } else {
+    //     console.error("Erro inesperado:", error);
+    //   }
+    // }
   }, [gifGroups, canvas, gifInterval, address]);
 
   const handleClear = useCallback(() => {

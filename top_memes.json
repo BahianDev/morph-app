@@ -1,0 +1,702 @@
+[
+  {
+    "tokenId": 1,
+    "owner": "0xE912d129D49564D2Bd5dcE8f495e7be5A41f5C44",
+    "positive": 70,
+    "negative": 26,
+    "score": 96
+  },
+  {
+    "tokenId": 2,
+    "owner": "0x6ab58e26E40821F56181a69263DB1bE5299150CA",
+    "positive": 61,
+    "negative": 29,
+    "score": 90
+  },
+  {
+    "tokenId": 3,
+    "owner": "0x2E73E34C50607B8FdFF70323Fa3279f41a522957",
+    "positive": 57,
+    "negative": 32,
+    "score": 89
+  },
+  {
+    "tokenId": 4,
+    "owner": "0xdFe4735E96d212D7aCe65B830a4b6152BC32C8C9",
+    "positive": 58,
+    "negative": 30,
+    "score": 88
+  },
+  {
+    "tokenId": 5,
+    "owner": "0xEAC2bEb5aEd059933e2148BEB35FFD5DE9a2D8A4",
+    "positive": 61,
+    "negative": 27,
+    "score": 88
+  },
+  {
+    "tokenId": 6,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 56,
+    "negative": 32,
+    "score": 88
+  },
+  {
+    "tokenId": 7,
+    "owner": "0xEbA0bA0cDDcE1E6FBb3776Ed3F33594238A8de3c",
+    "positive": 54,
+    "negative": 33,
+    "score": 87
+  },
+  {
+    "tokenId": 8,
+    "owner": "0x6ab58e26E40821F56181a69263DB1bE5299150CA",
+    "positive": 53,
+    "negative": 34,
+    "score": 87
+  },
+  {
+    "tokenId": 9,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 67,
+    "negative": 20,
+    "score": 87
+  },
+  {
+    "tokenId": 10,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 53,
+    "negative": 33,
+    "score": 86
+  },
+  {
+    "tokenId": 11,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 12,
+    "negative": 3,
+    "score": 15
+  },
+  {
+    "tokenId": 12,
+    "owner": "0x93c8e9ebCd2828e2B41913aF0a71d0Ea75BD06E7",
+    "positive": 7,
+    "negative": 8,
+    "score": 15
+  },
+  {
+    "tokenId": 13,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 9,
+    "negative": 6,
+    "score": 15
+  },
+  {
+    "tokenId": 14,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 9,
+    "negative": 6,
+    "score": 15
+  },
+  {
+    "tokenId": 15,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 11,
+    "negative": 4,
+    "score": 15
+  },
+  {
+    "tokenId": 16,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 8,
+    "negative": 7,
+    "score": 15
+  },
+  {
+    "tokenId": 17,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 11,
+    "negative": 4,
+    "score": 15
+  },
+  {
+    "tokenId": 18,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 10,
+    "negative": 5,
+    "score": 15
+  },
+  {
+    "tokenId": 19,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 7,
+    "negative": 8,
+    "score": 15
+  },
+  {
+    "tokenId": 20,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 8,
+    "negative": 7,
+    "score": 15
+  },
+  {
+    "tokenId": 21,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 2,
+    "negative": 0,
+    "score": 2
+  },
+  {
+    "tokenId": 31,
+    "owner": "0xd25Cb758cB3F40E8d1497b95f18585Cd2351a5e2",
+    "positive": 0,
+    "negative": 1,
+    "score": 1
+  },
+  {
+    "tokenId": 32,
+    "owner": "0x6193c0211c582840bd0D1b95e0eFae2E4CB3F7fF",
+    "positive": 1,
+    "negative": 0,
+    "score": 1
+  },
+  {
+    "tokenId": 33,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 0,
+    "negative": 1,
+    "score": 1
+  },
+  {
+    "tokenId": 34,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 1,
+    "negative": 0,
+    "score": 1
+  },
+  {
+    "tokenId": 35,
+    "owner": "0xFE02f7ce0e43F07Df6FE0Fe64f778631B3A6Bf32",
+    "positive": 1,
+    "negative": 0,
+    "score": 1
+  },
+  {
+    "tokenId": 36,
+    "owner": "0x2EA7E3CF39d3195bFF81c8C9a3230cCc833F4a5E",
+    "positive": 0,
+    "negative": 1,
+    "score": 1
+  },
+  {
+    "tokenId": 37,
+    "owner": "0x6193c0211c582840bd0D1b95e0eFae2E4CB3F7fF",
+    "positive": 1,
+    "negative": 0,
+    "score": 1
+  },
+  {
+    "tokenId": 38,
+    "owner": "0xC5c6b9CbAAd47E89487ef54Fc87D63F9bB06dFD8",
+    "positive": 1,
+    "negative": 0,
+    "score": 1
+  },
+  {
+    "tokenId": 39,
+    "owner": "0x6193c0211c582840bd0D1b95e0eFae2E4CB3F7fF",
+    "positive": 0,
+    "negative": 1,
+    "score": 1
+  },
+  {
+    "tokenId": 40,
+    "owner": "0x6193c0211c582840bd0D1b95e0eFae2E4CB3F7fF",
+    "positive": 1,
+    "negative": 0,
+    "score": 1
+  },
+  {
+    "tokenId": 22,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 23,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 24,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 25,
+    "owner": "0xC8ba00dBCeD2b3c758c188De10673EdA15d3dD58",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 26,
+    "owner": "0x1E1003674bc0036629F73BE6013B569Ce75B0e2c",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 27,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 28,
+    "owner": "0xC8ba00dBCeD2b3c758c188De10673EdA15d3dD58",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 29,
+    "owner": "0xC8ba00dBCeD2b3c758c188De10673EdA15d3dD58",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 30,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 41,
+    "owner": "0xE20dCC76c9A8BCB83d96F6231BAaB245b2E2706e",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 42,
+    "owner": "0xE20dCC76c9A8BCB83d96F6231BAaB245b2E2706e",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 43,
+    "owner": "0x6193c0211c582840bd0D1b95e0eFae2E4CB3F7fF",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 44,
+    "owner": "0x69D4951254491096f9cAAaD18979Ff1874b17DbD",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 45,
+    "owner": "0x69D4951254491096f9cAAaD18979Ff1874b17DbD",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 46,
+    "owner": "0x71DB4AcB731236BA67482bEE3268a80b9CFf2943",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 47,
+    "owner": "0x69D4951254491096f9cAAaD18979Ff1874b17DbD",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 48,
+    "owner": "0x69D4951254491096f9cAAaD18979Ff1874b17DbD",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 49,
+    "owner": "0x629764E050247cf522978B81Ee7AcF20153ceC8a",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 50,
+    "owner": "0xB574403b1c2A594BaE786A7B31c78A9222a48095",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 51,
+    "owner": "0x75976D4d18cD9dE80d6Ab1425163bA753df7969d",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 52,
+    "owner": "0x26E9C8bd196f9F4DE533038A63D167dd75cAcEb4",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 53,
+    "owner": "0x26E9C8bd196f9F4DE533038A63D167dd75cAcEb4",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 54,
+    "owner": "0x26E9C8bd196f9F4DE533038A63D167dd75cAcEb4",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 55,
+    "owner": "0x26E9C8bd196f9F4DE533038A63D167dd75cAcEb4",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 56,
+    "owner": "0x26E9C8bd196f9F4DE533038A63D167dd75cAcEb4",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 57,
+    "owner": "0x6193c0211c582840bd0D1b95e0eFae2E4CB3F7fF",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 58,
+    "owner": "0x26E9C8bd196f9F4DE533038A63D167dd75cAcEb4",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 59,
+    "owner": "0x26E9C8bd196f9F4DE533038A63D167dd75cAcEb4",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 60,
+    "owner": "0xB574403b1c2A594BaE786A7B31c78A9222a48095",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 61,
+    "owner": "0x4b32c230a22E73D6Fb30395Aa88fa51e1B96a19e",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 62,
+    "owner": "0x464407489c3c3da191c0DEe4507D68E287ca87B9",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 63,
+    "owner": "0x464407489c3c3da191c0DEe4507D68E287ca87B9",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 64,
+    "owner": "0xd1D23A2Fcb3d5C20fb90b0a5b5B481aeD0333e89",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 65,
+    "owner": "0x708621feA6a3e127f775886f4fcC5A7EDC6cc736",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 66,
+    "owner": "0x708621feA6a3e127f775886f4fcC5A7EDC6cc736",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 67,
+    "owner": "0x825664585d9Fcf3219FA991A5254B3C3efDBD6e3",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 68,
+    "owner": "0xEB738806274fC3D584bd612b4B7E3ea40f11942c",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 69,
+    "owner": "0x9d6438c992135C9f45fA708508292ae1e037b65E",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 70,
+    "owner": "0x182F745AeFA8eA744d7520507eA45a73b5ECd7Cd",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 71,
+    "owner": "0x9d6438c992135C9f45fA708508292ae1e037b65E",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 72,
+    "owner": "0xD8C9784CDbC8a2356c60EA5EAdE49111EC215cF1",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 73,
+    "owner": "0xFd15A0147E809f28e78918b0945cBb8B433C0D97",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 74,
+    "owner": "0x6ab58e26E40821F56181a69263DB1bE5299150CA",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 75,
+    "owner": "0x068Aa80d2ac42Da1D8eB0f20ec4Ff2b9d3260F0E",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 76,
+    "owner": "0x69DdbeC69beA90D144ce302E9C9d84a7aB40D5b8",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 77,
+    "owner": "0x2EA7E3CF39d3195bFF81c8C9a3230cCc833F4a5E",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 78,
+    "owner": "0xC268533030e8d60548001FCa8A2D5D1C7B194E49",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 79,
+    "owner": "0x17182583fe7d93909CD1ef5BF13D21cc5C8Af677",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 80,
+    "owner": "0x4EB10B7a2AAD8232f5a8aE570f0Ab0e8baa4ba52",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 81,
+    "owner": "0x17182583fe7d93909CD1ef5BF13D21cc5C8Af677",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 82,
+    "owner": "0x25E827a3F92a2Aa06805126370670617F0B74eb8",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 83,
+    "owner": "0x25E827a3F92a2Aa06805126370670617F0B74eb8",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 84,
+    "owner": "0x25E827a3F92a2Aa06805126370670617F0B74eb8",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 85,
+    "owner": "0x25E827a3F92a2Aa06805126370670617F0B74eb8",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 86,
+    "owner": "0x25E827a3F92a2Aa06805126370670617F0B74eb8",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 87,
+    "owner": "0x0973c343a5C5301dbAE137E83211A5f91E62F515",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 88,
+    "owner": "0xB1eDDB34B086716c6EffECEA30E7BD8eD5c9Fcd6",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 89,
+    "owner": "0x0973c343a5C5301dbAE137E83211A5f91E62F515",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 90,
+    "owner": "0xd25Cb758cB3F40E8d1497b95f18585Cd2351a5e2",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 91,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 92,
+    "owner": "0xd25Cb758cB3F40E8d1497b95f18585Cd2351a5e2",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 93,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 94,
+    "owner": "0x2EA7E3CF39d3195bFF81c8C9a3230cCc833F4a5E",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 95,
+    "owner": "0x2EA7E3CF39d3195bFF81c8C9a3230cCc833F4a5E",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 96,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 97,
+    "owner": "0xd25Cb758cB3F40E8d1497b95f18585Cd2351a5e2",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 98,
+    "owner": "0x894C933C4113fA86a84262F12610d4e8266e9194",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 99,
+    "owner": "0xd25Cb758cB3F40E8d1497b95f18585Cd2351a5e2",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  },
+  {
+    "tokenId": 100,
+    "owner": "0xd700c2E3841EC36BCED1122DDFec713b04c4e5F9",
+    "positive": 0,
+    "negative": 0,
+    "score": 0
+  }
+]
