@@ -5,12 +5,16 @@ import { useCallback, useState } from "react";
 import { ConnectWallet } from "./ConnectWallet";
 import { useAccount } from "wagmi";
 
-const navLinks = [
+const navLinks: {
+  title: string;
+  path: string;
+  requiresConnection?: boolean;
+}[] = [
   { title: "Home", path: "/home" },
-  { title: "Memes", path: "/memes/list" },
-  { title: "Leaderboard", path: "/leaderboard", requiresConnection: true },
-  { title: "Vote", path: "/vote" },
-  { title: "Trophies", path: "/trophies", requiresConnection: true },
+  // { title: "Memes", path: "/memes/list" },
+  // { title: "Leaderboard", path: "/leaderboard", requiresConnection: true },
+  // { title: "Vote", path: "/vote" },
+  // { title: "Trophies", path: "/trophies", requiresConnection: true },
 ];
 
 const Navbar = () => {
