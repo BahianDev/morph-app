@@ -9,19 +9,9 @@ import { loadedImg } from "@/config/loadedImg";
 import { canvasToFile } from "@/util/canvasToFile";
 import { createGIF } from "@/util/createGIF";
 import { base64ToBlob } from "@/util/base64ToBlob";
-import abi from "@/contracts/Memes.abi.json";
-import axios from "axios";
 import { TbArrowForwardUp, TbArrowBack } from "react-icons/tb";
 import { useHotkeys } from "react-hotkeys-hook";
 import { IoMdColorPalette, IoMdCloudUpload } from "react-icons/io";
-import {
-  readContract,
-  waitForTransactionReceipt,
-  writeContract,
-} from "@wagmi/core";
-import { config } from "../wagmi";
-import { IoMdCheckmarkCircle } from "react-icons/io";
-import toast from "react-hot-toast";
 import {
   Anton,
   Bebas_Neue,
@@ -34,9 +24,8 @@ import {
   Oswald,
 } from "next/font/google";
 import { NextFont } from "next/dist/compiled/@next/font";
-import { MEME_CONTRACT_ADDRESS } from "@/constants";
-import { api_backend } from "@/services/api";
 import { useAccount } from "wagmi";
+import { S3Client } from "@aws-sdk/client-s3";
 
 const anton = Anton({ subsets: ["latin"], weight: ["400"] });
 const bebas_Neue = Bebas_Neue({ subsets: ["latin"], weight: ["400"] });
@@ -61,14 +50,12 @@ const fonts = [
 ];
 
 export default function Memes() {
-  const { isConnected, address } = useAccount();
-
   const containerRef: any = useRef(null);
   const colorInputRef = useRef<HTMLInputElement>(null);
-  const backgroundUploadInputRef = useRef<HTMLInputElement>(null); // nova referência para upload
+  const backgroundUploadInputRef = useRef<HTMLInputElement>(null);
 
   const canvasRef = useRef<any>(null);
-  const sections = ["Background", "Stickers", "Zootosis", "GIFs", "Text"];
+  const sections = ["Background", "Stickers", "GIFs", "Text"];
 
   const [textColor, setTextColor] = useState("#000000");
 
@@ -83,6 +70,10 @@ export default function Memes() {
     visible: false,
     originX: "left",
     originY: "top",
+  };
+
+  const proxyImageUrl = (url: string) => {
+    return `/api/proxy-image?url=${encodeURIComponent(url)}`;
   };
 
   const handleDeleteActiveObject = useCallback(() => {
@@ -168,8 +159,10 @@ export default function Memes() {
   }, []);
 
   const handleAddGif = async (url: string) => {
+    const proxiedUrl = proxyImageUrl(url);
+
     const imgEl = document.createElement("img");
-    imgEl.setAttribute("rel:animated_src", url);
+    imgEl.setAttribute("rel:animated_src", proxiedUrl);
     imgEl.setAttribute("rel:auto_play", "0");
 
     // Cria um contêiner oculto para o elemento da imagem
@@ -184,10 +177,9 @@ export default function Memes() {
     // Carrega a imagem para obter as dimensões
     const image = new Image();
     image.src = url;
-    image.crossOrigin = "anonymous";
     await loadedImg(image);
     const { width } = image;
-    const scale = 500 / width;
+    const scale = 250 / width;
     Object.assign(imgOptions, { scaleX: scale, scaleY: scale });
 
     gif.load(async () => {
@@ -245,8 +237,10 @@ export default function Memes() {
   };
 
   const handleAddStikcer = async (url: string) => {
-    FabricImage.fromURL(url, {
-      crossOrigin: "anonymous",
+    const proxiedUrl = proxyImageUrl(url);
+
+    FabricImage.fromURL(proxiedUrl, {
+      crossOrigin: "anonymous", // Add this
     }).then((img) => {
       const oImg = img;
       oImg.set({ left: 20, top: 20 });
@@ -261,8 +255,10 @@ export default function Memes() {
   };
 
   const handleAddBackground = async (url: string) => {
-    FabricImage.fromURL(url, {
-      crossOrigin: "anonymous",
+    const proxiedUrl = proxyImageUrl(url);
+
+    FabricImage.fromURL(proxiedUrl, {
+      crossOrigin: "anonymous", // Add this
     }).then((img) => {
       const oImg = img;
       oImg.set({ left: 20, top: 20 });
@@ -272,12 +268,11 @@ export default function Memes() {
       oImg.cornerColor = "#14A800";
       oImg.objectCaching = false;
       canvas.add(oImg);
-      canvas.sendObjectToBack(oImg); // garante que o background fique atrás dos demais elementos
+      canvas.sendObjectToBack(oImg);
       canvas.setActiveObject(oImg);
     });
   };
 
-  // Função para tratar o upload do background via input de arquivo
   const handleBackgroundUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -286,65 +281,58 @@ export default function Memes() {
   };
 
   const handleDownload = useCallback(async () => {
-    if (gifGroups.length === 0) {
-      const dataURL = canvas.toDataURL({ format: "png", multiplier: 8 });
-      const blob = base64ToBlob(dataURL);
-      const el = document.createElement("a");
-      el.href = URL.createObjectURL(blob);
-      el.download = "generated.png";
-      el.style.display = "none";
-      document.body.appendChild(el);
-      el.click();
-      document.body.removeChild(el);
-      return;
-    }
-    // Para exportar como GIF, neste exemplo usamos o primeiro grupo de GIF
-    const group = gifGroups[0];
-    const frames = group.getObjects();
-    let i = 0;
-    const dataImages: Array<any> = [];
     let imageGenerated: any;
 
-    const processFrames = async (): Promise<void> => {
-      return new Promise((resolve) => {
-        const processFrame = async () => {
-          if (i >= frames.length) {
-            try {
-              const gif = await createGIF(dataImages, {
-                gifWidth: 1080,
-                gifHeight: 1080,
-                interval: gifInterval / 1000,
-                sampleInterval: 10,
-                progressCallback: (progress: number) => {
-                  console.log(progress);
-                },
-              });
-              imageGenerated = gif;
-              dataImages.length = 0;
-            } catch (e) {
-              console.error("Erro ao criar o GIF:", e);
+    if (gifGroups.length === 0) {
+      const dataURL = canvas.toDataURL({ format: "png" });
+      imageGenerated = dataURL;
+    } else {
+      const group = gifGroups[0];
+      const frames = group.getObjects();
+      let i = 0;
+      const dataImages: Array<any> = [];
+
+      const processFrames = async (): Promise<void> => {
+        return new Promise((resolve) => {
+          const processFrame = async () => {
+            if (i >= frames.length) {
+              try {
+                const gif = await createGIF(dataImages, {
+                  gifWidth: 1080,
+                  gifHeight: 1080,
+                  interval: gifInterval / 1000,
+                  sampleInterval: 10,
+                  progressCallback: (progress: number) => {
+                    console.log(progress);
+                  },
+                });
+                imageGenerated = gif;
+                dataImages.length = 0;
+              } catch (e) {
+                console.error("Erro ao criar o GIF:", e);
+              }
+              resolve();
+              return;
             }
-            resolve();
-            return;
-          }
 
-          frames.forEach((frame: any, index: any) => {
-            frame.set("visible", index === i);
-          });
+            frames.forEach((frame: any, index: any) => {
+              frame.set("visible", index === i);
+            });
 
-          try {
-            dataImages.push(canvas.toDataURL());
-          } catch (e) {
-            console.error("Erro ao capturar o frame:", e);
-          }
-          i++;
-          setTimeout(processFrame, 40);
-        };
-        processFrame();
-      });
-    };
+            try {
+              dataImages.push(canvas.toDataURL());
+            } catch (e) {
+              console.error("Erro ao capturar o frame:", e);
+            }
+            i++;
+            setTimeout(processFrame, 40);
+          };
+          processFrame();
+        });
+      };
 
-    await processFrames();
+      await processFrames();
+    }
 
     const el = document.createElement("a");
     el.href = URL.createObjectURL(base64ToBlob(imageGenerated));
@@ -354,140 +342,6 @@ export default function Memes() {
     el.click();
     document.body.removeChild(el);
   }, [gifGroups, canvas, gifInterval]);
-
-  const handleMorph = useCallback(async () => {
-    // let imageGenerated: any;
-
-    // if (!isConnected || !address) {
-    //   return toast.error("Please, connect your wallet!");
-    // }
-
-    // if (gifGroups.length === 0) {
-    //   const dataURL = canvas.toDataURL({ format: "png" });
-    //   imageGenerated = dataURL;
-    // } else {
-    //   const group = gifGroups[0];
-    //   const frames = group.getObjects();
-    //   let i = 0;
-    //   const dataImages: Array<any> = [];
-
-    //   const processFrames = async (): Promise<void> => {
-    //     return new Promise((resolve) => {
-    //       const processFrame = async () => {
-    //         if (i >= frames.length) {
-    //           try {
-    //             const gif = await createGIF(dataImages, {
-    //               gifWidth: 1080,
-    //               gifHeight: 1080,
-    //               interval: gifInterval / 1000,
-    //               sampleInterval: 10,
-    //               progressCallback: (progress: number) => {
-    //                 console.log(progress);
-    //               },
-    //             });
-    //             imageGenerated = gif;
-    //             dataImages.length = 0;
-    //           } catch (e) {
-    //             console.error("Erro ao criar o GIF:", e);
-    //           }
-    //           resolve();
-    //           return;
-    //         }
-
-    //         frames.forEach((frame: any, index: any) => {
-    //           frame.set("visible", index === i);
-    //         });
-
-    //         try {
-    //           dataImages.push(canvas.toDataURL());
-    //         } catch (e) {
-    //           console.error("Erro ao capturar o frame:", e);
-    //         }
-    //         i++;
-    //         setTimeout(processFrame, 40);
-    //       };
-    //       processFrame();
-    //     });
-    //   };
-
-    //   await processFrames();
-    // }
-
-    // try {
-    //   toast.loading("Uploading metadata...");
-
-    //   const tokenId = await readContract(config, {
-    //     abi,
-    //     address: MEME_CONTRACT_ADDRESS,
-    //     functionName: "totalSupply",
-    //   }).then((r) => Number(r) + 1);
-
-    //   const formData = new FormData();
-    //   formData.set("file", base64ToBlob(imageGenerated));
-    //   formData.set("tokenId", String(tokenId));
-
-    //   await axios.post("/memes/upload", formData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   });
-
-    //   toast.dismiss();
-
-    //   toast.loading("Sending transaction...");
-
-    //   const result = await writeContract(config, {
-    //     abi,
-    //     address: MEME_CONTRACT_ADDRESS,
-    //     functionName: "safeMint",
-    //     args: [
-    //       `https://morphd.s3.us-east-2.amazonaws.com/memes/metadata/${tokenId}.json`,
-    //     ],
-    //   });
-
-    //   await api_backend.post(`memes/${tokenId}/mint`, {
-    //     wallet: address,
-    //   });
-
-    //   toast.dismiss();
-
-    //   toast.loading("Confirming transaction...");
-
-    //   const transactionReceipt = await waitForTransactionReceipt(config, {
-    //     hash: result,
-    //   });
-
-    //   toast.dismiss();
-
-    //   toast.custom(
-    //     <div className="flex items-center gap-2 bg-white border-2 border-primary p-3 rounded-lg">
-    //       <IoMdCheckmarkCircle size={10} className="w-10 h-10 text-primary" />
-
-    //       <a
-    //         className="font-bold text-lg"
-    //         target="_blank"
-    //         href={`https://explorer.morphl2.io/token/${MEME_CONTRACT_ADDRESS}/instance/${tokenId}`}
-    //       >
-    //         Click to see Morph Explorer
-    //       </a>
-    //     </div>,
-    //     {
-    //       duration: 4000,
-    //     }
-    //   );
-
-    //   return transactionReceipt;
-    // } catch (error) {
-    //   if (axios.isAxiosError(error)) {
-    //     console.error(
-    //       "Erro na solicitação Axios:",
-    //       error.response?.data || error.message
-    //     );
-    //   } else {
-    //     console.error("Erro inesperado:", error);
-    //   }
-    // }
-  }, [gifGroups, canvas, gifInterval, address]);
 
   const handleClear = useCallback(() => {
     canvas?.getObjects().forEach((obj: any) => {
@@ -524,17 +378,15 @@ export default function Memes() {
   };
 
   const fetchProjects = async ({ pageParam }: { pageParam?: number }) => {
-    const res = await fetch(
-      `https://better-festival-3bb25677f9.strapiapp.com/api/memes?populate=*&pagination[page]=${pageParam}&pagination[pageSize]=100`
-    );
-    if (!res.ok) {
-      throw new Error("Erro ao buscar os memes");
-    }
+    const res = await fetch(`/api/memes?page=${pageParam ?? 1}&pageSize=100`, {
+      // garante que não cacheie no client
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("Erro ao buscar os memes");
     const json = await res.json();
-
     return {
-      data: json.data,
-      pagination: json.meta.pagination,
+      data: json.data, // compatível com seu map/filter
+      pagination: json.meta.pagination, // { page, pageSize, pageCount, total }
     };
   };
 
@@ -673,10 +525,6 @@ export default function Memes() {
                             return await handleAddStikcer(trait.image.url);
                           } else if (tab === "Background") {
                             return await handleAddBackground(trait.image.url);
-                          } else if (tab === "Zootosis BG") {
-                            return await handleAddBackground(trait.image.url);
-                          } else if (tab === "Zootosis") {
-                            return await handleAddStikcer(trait.image.url);
                           }
                         }}
                         className="border border-gray-500 w-24 h-24 rounded-lg cursor-pointer"
@@ -706,10 +554,10 @@ export default function Memes() {
             RESET
           </button>
           <button
-            onClick={handleMorph}
+            onClick={handleDownload}
             className="focus:outline-none text-white border-2 border-transparent bg-primary hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-1 me-2 mb-2"
           >
-            MORPH
+            DOWNLOAD
           </button>
         </div>
       </main>
